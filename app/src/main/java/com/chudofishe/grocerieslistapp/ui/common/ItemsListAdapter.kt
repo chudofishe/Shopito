@@ -1,19 +1,17 @@
 package com.chudofishe.grocerieslistapp.ui.common
 
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
-import androidx.recyclerview.widget.RecyclerView
 import com.chudofishe.grocerieslistapp.databinding.ShoppingItemBinding
 import com.chudofishe.grocerieslistapp.data.model.Category
 import com.chudofishe.grocerieslistapp.data.model.ShoppingItem
 import com.chudofishe.grocerieslistapp.databinding.ShoppingItemFavoriteBinding
 
 class ItemsListAdapter(private val itemsType: ItemsListAdapterItemType,
-                       val listener: ItemsListAdapterActionsListener? = null
-) : ListAdapter<ShoppingItem, ItemsListViewHolder>(ShoppingItemDiffCallback()) {
+                       private val listener: ItemsListAdapterActionsListener)
+    : ListAdapter<ShoppingItem, ItemsListViewHolder>(ShoppingItemDiffCallback()) {
 
     var updateCategoryItemCount: (Int) -> Unit = {}
     val checkedItems = mutableListOf<ShoppingItem>()
@@ -22,8 +20,7 @@ class ItemsListAdapter(private val itemsType: ItemsListAdapterItemType,
 
     class ShoppingItemDiffCallback : DiffUtil.ItemCallback<ShoppingItem>() {
         override fun areItemsTheSame(oldItem: ShoppingItem, newItem: ShoppingItem): Boolean {
-            return oldItem.text == newItem.text &&
-                    oldItem.originalCategory == newItem.originalCategory
+            return oldItem.text == newItem.text
         }
 
         override fun areContentsTheSame(oldItem: ShoppingItem, newItem: ShoppingItem): Boolean {
@@ -62,29 +59,30 @@ class ItemsListAdapter(private val itemsType: ItemsListAdapterItemType,
         previousList: MutableList<ShoppingItem>,
         currentList: MutableList<ShoppingItem>
     ) {
-        if (currentList.isEmpty() && previousList.isNotEmpty()) {
-            listCategory?.let {
-                listener?.removeCategory(it)
-            }
-        } else {
-            updateCategoryItemCount(currentList.size)
-        }
+//        if (currentList.isEmpty() && previousList.isNotEmpty()) {
+//            listCategory?.let {
+//                listener?.removeCategory(it)
+//            }
+//        } else {
+//            updateCategoryItemCount(currentList.size)
+//        }
+        updateCategoryItemCount(currentList.size)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemsListViewHolder {
         val inflater = LayoutInflater.from(parent.context)
         return when (itemsType) {
             ItemsListAdapterItemType.ACTIVE -> {
-                ActiveListItemViewHolder(ShoppingItemBinding.inflate(inflater, parent, false), this)
+                ActiveListItemViewHolder(ShoppingItemBinding.inflate(inflater, parent, false), listener)
             }
             ItemsListAdapterItemType.HISTORIZED -> {
-                HistoryListItemViewHolder(ShoppingItemBinding.inflate(inflater, parent, false), this)
+                HistoryListItemViewHolder(ShoppingItemBinding.inflate(inflater, parent, false), listener)
             }
             ItemsListAdapterItemType.FAVORITE_EDIT -> {
-                FavoriteEditableListItemViewHolder(ShoppingItemFavoriteBinding.inflate(inflater, parent, false), this)
+                FavoriteEditableListItemViewHolder(ShoppingItemFavoriteBinding.inflate(inflater, parent, false), listener)
             }
             ItemsListAdapterItemType.FAVORITE_SELECTION -> {
-                FavoriteSelectionListItemViewHolder(ShoppingItemFavoriteBinding.inflate(inflater, parent, false), this)
+                FavoriteSelectionListItemViewHolder(ShoppingItemFavoriteBinding.inflate(inflater, parent, false), listener)
             }
         }
     }
@@ -110,8 +108,8 @@ class ItemsListAdapter(private val itemsType: ItemsListAdapterItemType,
 
 interface ItemsListAdapterActionsListener {
     fun onItemClicked(item: ShoppingItem) {}
-    fun removeCategory(category: Category?) {}
-    fun updateItem(item: ShoppingItem) {}
-    fun deleteItem(item: ShoppingItem) {}
-    fun saveItem(item: ShoppingItem) {}
+    fun onItemLongClicked(item: ShoppingItem) {}
+    fun onRemoveButtonClicked(item: ShoppingItem) {}
+    fun onUpdateButtonClicked(item: ShoppingItem) {}
+    fun onItemChecked(item: ShoppingItem) {}
 }

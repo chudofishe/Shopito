@@ -56,6 +56,45 @@ class ActiveListFragment : BaseFragment<ActiveListViewModel>() {
     private lateinit var scrollView: NestedScrollView
     private lateinit var bottomSheetBehavior: BottomSheetBehavior<LinearLayout>
 
+    val categoryAdapterEventListener = object : CategoryAdapterEventListener {
+        override fun onItemClicked(item: ShoppingItem) {
+            viewModel.updateItem(item)
+        }
+
+        override fun onItemLongClicked(item: ShoppingItem) {
+            viewModel.addShoppingItemToFavorites(item)
+        }
+
+        override fun onRemoveButtonClicked(item: ShoppingItem) {
+            viewModel.removeItem(item)
+        }
+
+        override fun onCategoriesListCleared() {
+
+        }
+
+        override fun onCategoriesListCompleted(list: List<ShoppingItem>) {
+            completeCategoriesList()
+        }
+
+        override fun onCategoryAdded() {
+            if (emptyListTooltip.isVisible || doneAnimation.isVisible) {
+                emptyListTooltip.visibility = View.GONE
+                doneAnimation.visibility = View.INVISIBLE
+                titleInput.visibility = View.VISIBLE
+            }
+        }
+
+        override fun onCategoryCleared(list: List<ShoppingItem>) {
+            viewModel.removeItemsList(list)
+        }
+
+        override fun onCategoryCompleted(list: List<ShoppingItem>) {
+            viewModel.updateItemsList(list)
+        }
+
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -113,55 +152,56 @@ class ActiveListFragment : BaseFragment<ActiveListViewModel>() {
 
             override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
                 when(menuItem.itemId) {
-                    R.id.action_clear_list -> categoriesAdapter.removeAll()
-                    R.id.action_mark_list_as_done -> categoriesAdapter.completeList()
+                    R.id.action_clear_list -> clearCategoriesList()
+                    R.id.action_mark_list_as_done -> completeCategoriesList()
                     else -> viewModel.navigateBack()
                 }
                 return true
             }
         }, viewLifecycleOwner, Lifecycle.State.RESUMED)
 
-        categoriesAdapter = CategoriesListAdapter(listener = object : CategoriesAdapterActionsListener {
-            override fun onListCleared() {
-                if (doneAnimation.isVisible) doneAnimation.visibility = View.GONE
-                emptyListTooltip.visibility = View.VISIBLE
-                binding.tooltipText.text = getString(R.string.tooltip_start_text)
-                titleInput.visibility = View.INVISIBLE
-                titleInput.editText?.text?.clear()
-            }
-
-            override fun onListCompleted(items: List<ShoppingItem>?) {
-                if (emptyListTooltip.isVisible) emptyListTooltip.visibility = View.GONE
-                doneAnimation.visibility = View.VISIBLE
-                doneAnimation.playAnimation()
-                titleInput.visibility = View.INVISIBLE
-
-                items?.let {
-                    val title = titleInput.editText?.text.toStringOrNull()
-                    viewModel.saveList(title, it)
-                }
-            }
-
-            override fun onItemAdded() {
-                if (emptyListTooltip.isVisible || doneAnimation.isVisible) {
-                    emptyListTooltip.visibility = View.GONE
-                    doneAnimation.visibility = View.INVISIBLE
-                    titleInput.visibility = View.VISIBLE
-                }
-            }
-
-            override fun onEditItemButtonClicked(item: ShoppingItem) {
-                itemName.setText(item.text)
-                item.description?.let { itemDescription.setText(it) }
-                categoriesGroup.check(item.originalCategory.ordinal)
-                bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
-            }
-
-            override fun onSubListItemLongClick(item: ShoppingItem) {
-                viewModel.addShoppingItemToFavorites(item)
-            }
-
-        })
+//        categoriesAdapter = CategoriesListAdapter(listener = object : CategoriesAdapterActionsListener {
+//            override fun onListCleared() {
+//                if (doneAnimation.isVisible) doneAnimation.visibility = View.GONE
+//                emptyListTooltip.visibility = View.VISIBLE
+//                binding.tooltipText.text = getString(R.string.tooltip_start_text)
+//                titleInput.visibility = View.INVISIBLE
+//                titleInput.editText?.text?.clear()
+//            }
+//
+//            override fun onListCompleted(items: List<ShoppingItem>?) {
+//                if (emptyListTooltip.isVisible) emptyListTooltip.visibility = View.GONE
+//                doneAnimation.visibility = View.VISIBLE
+//                doneAnimation.playAnimation()
+//                titleInput.visibility = View.INVISIBLE
+//
+//                items?.let {
+//                    val title = titleInput.editText?.text.toStringOrNull()
+//                    viewModel.saveList(title, it)
+//                }
+//            }
+//
+//            override fun onItemAdded() {
+//                if (emptyListTooltip.isVisible || doneAnimation.isVisible) {
+//                    emptyListTooltip.visibility = View.GONE
+//                    doneAnimation.visibility = View.INVISIBLE
+//                    titleInput.visibility = View.VISIBLE
+//                }
+//            }
+//
+//            override fun onEditItemButtonClicked(item: ShoppingItem) {
+//                itemName.setText(item.text)
+//                item.description?.let { itemDescription.setText(it) }
+//                categoriesGroup.check(item.originalCategory.ordinal)
+//                bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
+//            }
+//
+//            override fun onSubListItemLongClick(item: ShoppingItem) {
+//                viewModel.addShoppingItemToFavorites(item)
+//            }
+//
+//        }, listStateChangedListener = getListStateChangedListener())
+        categoriesAdapter = CategoriesListAdapter(onEventListener = categoryAdapterEventListener)
         categoriesList.adapter = categoriesAdapter
         categoriesList.addItemDecoration(
             MarginItemDecoration(resources.getDimension(R.dimen.card_spacing).toInt())
@@ -181,7 +221,7 @@ class ActiveListFragment : BaseFragment<ActiveListViewModel>() {
                 } else {
                     Category.values()[categoriesGroup.checkedChipId]
                 }
-                categoriesAdapter.addItem(ShoppingItem(
+                viewModel.addItem(ShoppingItem(
                     text = itemName.text.toString(),
                     description = itemDescription.text?.toStringOrNull(),
                     currentCategory = category,
@@ -203,12 +243,38 @@ class ActiveListFragment : BaseFragment<ActiveListViewModel>() {
         categoriesGroup.init()
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
+    private fun completeCategoriesList() {
+        if (emptyListTooltip.isVisible) emptyListTooltip.visibility = View.GONE
+        doneAnimation.visibility = View.VISIBLE
+        doneAnimation.playAnimation()
+        titleInput.visibility = View.INVISIBLE
+        titleInput.editText?.text?.clear()
+
+        val title = titleInput.editText?.text.toStringOrNull()
+        val items = categoriesAdapter.getItems()
+        categoriesAdapter.removeAll()
+
+        viewModel.saveList(title, items)
+    }
+
+    private fun clearCategoriesList() {
+        if (doneAnimation.isVisible) doneAnimation.visibility = View.GONE
+        emptyListTooltip.visibility = View.VISIBLE
+        binding.tooltipText.text = getString(R.string.tooltip_start_text)
+        titleInput.visibility = View.INVISIBLE
+        titleInput.editText?.text?.clear()
+
+        categoriesAdapter.removeAll()
+
+        viewModel.clearState()
+    }
+
+    override fun onPause() {
+        super.onPause()
         _binding = null
 
         val title = titleInput.editText?.text.toStringOrNull()
-        viewModel.saveTempState(title, categoriesAdapter.getShoppingItems())
+        viewModel.saveTempState(title, categoriesAdapter.getItems())
     }
 
     private fun hideKeyboard(view: View) {

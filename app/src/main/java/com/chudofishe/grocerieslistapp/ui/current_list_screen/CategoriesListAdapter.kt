@@ -11,11 +11,10 @@ import com.chudofishe.grocerieslistapp.R
 import com.chudofishe.grocerieslistapp.databinding.CategoryCardBinding
 import com.chudofishe.grocerieslistapp.data.model.Category
 import com.chudofishe.grocerieslistapp.data.model.ShoppingItem
-import com.chudofishe.grocerieslistapp.data.model.ShoppingList
 import com.chudofishe.grocerieslistapp.ui.common.*
 
 class CategoriesListAdapter(private val categories: MutableList<Category> = mutableListOf(),
-                            private val listener: CategoriesAdapterActionsListener)
+                            private val onEventListener: CategoryAdapterEventListener)
     : RecyclerView.Adapter<CategoriesListAdapter.ViewHolder>() {
 
     private val categoryAdapters: MutableMap<Category, ItemsListAdapter> = mutableMapOf()
@@ -40,10 +39,9 @@ class CategoriesListAdapter(private val categories: MutableList<Category> = muta
             add(item.currentCategory)
         }
         categoryAdapters[item.currentCategory]!!.add(item)
-        listener.onItemAdded()
     }
 
-    fun getShoppingItems(): List<ShoppingItem> {
+    fun getItems(): List<ShoppingItem> {
         val items = mutableListOf<ShoppingItem>()
         categoryAdapters.forEach {
             items.addAll(it.value.items)
@@ -56,7 +54,6 @@ class CategoriesListAdapter(private val categories: MutableList<Category> = muta
             val filteredList = list.filter { x -> x.originalCategory ==  category }
             if (filteredList.isNotEmpty()) {
                 addListToCategory(filteredList, category)
-                listener.onItemAdded()
             }
         }
     }
@@ -68,7 +65,7 @@ class CategoriesListAdapter(private val categories: MutableList<Category> = muta
         categoryAdapters[category]!!.addList(list)
     }
 
-    fun add(newItem: Category) {
+    private fun add(newItem: Category) {
         when(newItem) {
             Category.UNCATEGORIZED -> {
                 categories.add(0, newItem)
@@ -93,19 +90,20 @@ class CategoriesListAdapter(private val categories: MutableList<Category> = muta
         }
         categoryAdapters[newItem] =
             ItemsListAdapter(ItemsListAdapterItemType.ACTIVE, createItemsListAdapterActionsListener())
+        onEventListener.onCategoryAdded()
     }
 
     @SuppressLint("NotifyDataSetChanged")
-    fun remove(category: Category) {
+    private fun remove(category: Category) {
         val index = categories.indexOf(category)
         categories.remove(category)
         notifyItemRemoved(index)
         categoryAdapters.remove(category)
         if (categories.size == 0) {
-            listener.onListCleared()
+            onEventListener.onCategoriesListCleared()
         }
         if (categories.size == 1 && categories[0] == Category.DONE) {
-            completeList()
+            onEventListener.onCategoriesListCompleted(getItems())
         }
     }
 
@@ -114,66 +112,66 @@ class CategoriesListAdapter(private val categories: MutableList<Category> = muta
         categories.clear()
         categoryAdapters.clear()
         notifyDataSetChanged()
-        listener.onListCleared()
+        onEventListener.onCategoriesListCleared()
     }
 
-    @SuppressLint("NotifyDataSetChanged")
-    fun completeList() {
-        if (categories.isNotEmpty()) {
-            val items = mutableListOf<ShoppingItem>()
-            categoryAdapters.forEach {
-                items.addAll(it.value.items)
-            }
-            categories.clear()
-            categoryAdapters.clear()
-            notifyDataSetChanged()
-            listener.onListCompleted(if (items.isEmpty()) null else items)
-        }
-    }
+//    @SuppressLint("NotifyDataSetChanged")
+//    fun completeList() {
+//        if (categories.isNotEmpty()) {
+//            val items = mutableListOf<ShoppingItem>()
+//            categoryAdapters.forEach {
+//                items.addAll(it.value.items)
+//            }
+//            categories.clear()
+//            categoryAdapters.clear()
+//            notifyDataSetChanged()
+//            onCategoryChangedListener.onListCompleted(if (items.isEmpty()) null else items)
+//        }
+//    }
 
     private fun createItemsListAdapterActionsListener(): ItemsListAdapterActionsListener {
         return object : ItemsListAdapterActionsListener {
             override fun onItemClicked(item: ShoppingItem) {
-                this@CategoriesListAdapter.moveItem(item)
-            }
-
-            override fun removeCategory(category: Category?) {
-                category?.let {
-                    remove(it)
+                if (categoryAdapters[item.currentCategory]?.items?.size == 1) {
+                    remove(item.currentCategory)
                 }
+                onEventListener.onItemClicked(item)
             }
 
-            override fun updateItem(item: ShoppingItem) {
-                listener.onEditItemButtonClicked(item)
+            override fun onItemLongClicked(item: ShoppingItem) {
+                onEventListener.onItemLongClicked(item)
             }
 
-            override fun saveItem(item: ShoppingItem) {
-                listener.onSubListItemLongClick(item)
+            override fun onRemoveButtonClicked(item: ShoppingItem) {
+                if (categoryAdapters[item.currentCategory]?.items?.size == 1) {
+                    remove(item.currentCategory)
+                }
+                onEventListener.onRemoveButtonClicked(item)
             }
         }
     }
 
-    private fun moveItem(item: ShoppingItem) {
-        item.currentCategory =
-            if (item.currentCategory == Category.DONE) item.originalCategory else Category.DONE
-        if (categories.isNotEmpty()) {
-            addItem(item)
-        }
-    }
-
-    private fun moveItemsList(list: List<ShoppingItem>, currentCategory: Category) {
-        if (currentCategory == Category.DONE) {
-            list.forEach {
-                it.currentCategory = it.originalCategory
-            }
-            addList(list)
-        } else {
-            list.forEach {
-                it.currentCategory = Category.DONE
-            }
-            addListToCategory(list, Category.DONE)
-        }
-    }
+//    private fun moveItem(item: ShoppingItem) {
+//        item.currentCategory =
+//            if (item.currentCategory == Category.DONE) item.originalCategory else Category.DONE
+//        if (categories.isNotEmpty()) {
+//            addItem(item)
+//        }
+//    }
+//
+//    private fun moveItemsList(list: List<ShoppingItem>, currentCategory: Category) {
+//        if (currentCategory == Category.DONE) {
+//            list.forEach {
+//                it.currentCategory = it.originalCategory
+//            }
+//            addList(list)
+//        } else {
+//            list.forEach {
+//                it.currentCategory = Category.DONE
+//            }
+//            addListToCategory(list, Category.DONE)
+//        }
+//    }
 
     inner class ViewHolder(private val binding: CategoryCardBinding) : BaseCardViewHolder(binding.root) {
 
@@ -194,12 +192,12 @@ class CategoriesListAdapter(private val categories: MutableList<Category> = muta
                 )
                 setOnMenuItemClickListener { menuItem ->
                     when (menuItem.itemId) {
-                        R.id.menu_delete_all -> remove(category)
+                        R.id.menu_delete_all -> {
+                            onEventListener.onCategoryCleared(adapter.currentList)
+                            remove(category)
+                        }
                         R.id.menu_complete_all, R.id.menu_uncomplete_all -> {
-                            val items = categoryAdapters[category]?.items
-                            items?.let {
-                                moveItemsList(it, category)
-                            }
+                            onEventListener.onCategoryCompleted(adapter.currentList)
                             remove(category)
                         }
                     }
@@ -243,10 +241,13 @@ class CategoriesListAdapter(private val categories: MutableList<Category> = muta
     }
 }
 
-interface CategoriesAdapterActionsListener {
-    fun onListCleared()
-    fun onListCompleted(items: List<ShoppingItem>?)
-    fun onItemAdded()
-    fun onEditItemButtonClicked(item: ShoppingItem)
-    fun onSubListItemLongClick(item: ShoppingItem)
+interface CategoryAdapterEventListener {
+    fun onItemClicked(item: ShoppingItem)
+    fun onItemLongClicked(item: ShoppingItem)
+    fun onRemoveButtonClicked(item: ShoppingItem)
+    fun onCategoriesListCleared()
+    fun onCategoriesListCompleted(list: List<ShoppingItem>)
+    fun onCategoryAdded()
+    fun onCategoryCleared(list: List<ShoppingItem>)
+    fun onCategoryCompleted(list: List<ShoppingItem>)
 }

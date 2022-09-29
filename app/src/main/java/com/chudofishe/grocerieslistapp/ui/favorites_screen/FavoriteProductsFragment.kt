@@ -53,7 +53,7 @@ class FavoriteProductsFragment : BaseFragment<FavoriteProductsViewModel>() {
     private var editedItemId: Int? = null
 
     private val itemsListAdapterActionsListener = object : ItemsListAdapterActionsListener {
-        override fun updateItem(item: ShoppingItem) {
+        override fun onUpdateButtonClicked(item: ShoppingItem) {
             editedItemId = item.id
             itemName.setText(item.text)
             itemDescription.setText(item.description)
@@ -63,13 +63,13 @@ class FavoriteProductsFragment : BaseFragment<FavoriteProductsViewModel>() {
             bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
         }
 
-        override fun deleteItem(item: ShoppingItem) {
+        override fun onRemoveButtonClicked(item: ShoppingItem) {
             viewModel.delete(item)
         }
 
-        override fun saveItem(item: ShoppingItem) {
-            viewModel.add(item)
-        }
+//        override fun saveItem(item: ShoppingItem) {
+//            viewModel.add(item)
+//        }
     }
 
     override fun onCreateView(

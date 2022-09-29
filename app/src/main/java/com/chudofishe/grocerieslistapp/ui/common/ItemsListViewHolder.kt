@@ -14,10 +14,8 @@ enum class ItemsListAdapterItemType {
     ACTIVE, HISTORIZED, FAVORITE_EDIT, FAVORITE_SELECTION
 }
 
-abstract class ItemsListViewHolder(view: View, private val adapter: ItemsListAdapter) : RecyclerView.ViewHolder(view) {
-    val removeCallback: () -> Unit = {
-        adapter.remove(layoutPosition)
-    }
+abstract class ItemsListViewHolder(view: View,
+                                   private val listener: ItemsListAdapterActionsListener) : RecyclerView.ViewHolder(view) {
 
     abstract fun bind(item: ShoppingItem)
     abstract fun setLeadingIconImage(category: Category)
@@ -26,15 +24,16 @@ abstract class ItemsListViewHolder(view: View, private val adapter: ItemsListAda
         AlertDialog.Builder(itemView.context)
             .setMessage(itemView.context.getString(R.string.question_save_to_favorites))
             .setPositiveButton(R.string.yes) { _, _ ->
-                adapter.listener?.saveItem(item)
+                listener.onItemLongClicked(item)
             }
             .setNegativeButton(R.string.no, null)
             .create().show()
     }
 }
 
-class ActiveListItemViewHolder(private val binding: ShoppingItemBinding, private val adapter: ItemsListAdapter)
-    : ItemsListViewHolder(binding.root, adapter) {
+class ActiveListItemViewHolder(private val binding: ShoppingItemBinding,
+                               private val listener: ItemsListAdapterActionsListener)
+    : ItemsListViewHolder(binding.root, listener) {
 
     override fun bind(item: ShoppingItem) {
         with(binding) {
@@ -44,12 +43,11 @@ class ActiveListItemViewHolder(private val binding: ShoppingItemBinding, private
                 properties.text = it
             }
             remove.setOnClickListener {
-                adapter.remove(layoutPosition)
+                listener.onRemoveButtonClicked(item)
 
             }
             root.setOnClickListener {
-                adapter.listener?.onItemClicked(item)
-                adapter.remove(layoutPosition)
+                listener.onItemClicked(item)
             }
             root.setOnLongClickListener {
                 showSaveItemDialog(item)
@@ -70,8 +68,9 @@ class ActiveListItemViewHolder(private val binding: ShoppingItemBinding, private
     }
 }
 
-class HistoryListItemViewHolder(private val binding: ShoppingItemBinding, private val adapter: ItemsListAdapter)
-    : ItemsListViewHolder(binding.root, adapter) {
+class HistoryListItemViewHolder(private val binding: ShoppingItemBinding,
+                                private val listener: ItemsListAdapterActionsListener)
+    : ItemsListViewHolder(binding.root, listener) {
 
     override fun bind(item: ShoppingItem) {
         with(binding) {
@@ -113,8 +112,9 @@ class HistoryListItemViewHolder(private val binding: ShoppingItemBinding, privat
     }
 }
 
-class FavoriteEditableListItemViewHolder(private val binding: ShoppingItemFavoriteBinding, private val adapter: ItemsListAdapter)
-    : ItemsListViewHolder(binding.root, adapter) {
+class FavoriteEditableListItemViewHolder(private val binding: ShoppingItemFavoriteBinding,
+                                         private val listener: ItemsListAdapterActionsListener)
+    : ItemsListViewHolder(binding.root, listener) {
 
     override fun bind(item: ShoppingItem) {
         with(binding) {
@@ -137,11 +137,10 @@ class FavoriteEditableListItemViewHolder(private val binding: ShoppingItemFavori
             setOnMenuItemClickListener { menuItem ->
                 when (menuItem.itemId) {
                     R.id.shopping_item_favorite_menu_delete -> {
-                        removeCallback
-                        adapter.listener?.deleteItem(item)
+                        listener.onRemoveButtonClicked(item)
                     }
                     R.id.shopping_item_favorite_menu_edit -> {
-                        adapter.listener?.updateItem(item)
+                        listener.onUpdateButtonClicked(item)
                     }
                 }
                 true
@@ -161,10 +160,9 @@ class FavoriteEditableListItemViewHolder(private val binding: ShoppingItemFavori
     }
 }
 
-class FavoriteSelectionListItemViewHolder(private val binding: ShoppingItemFavoriteBinding, private val adapter: ItemsListAdapter)
-    : ItemsListViewHolder(binding.root, adapter) {
-
-    private var checked = false
+class FavoriteSelectionListItemViewHolder(private val binding: ShoppingItemFavoriteBinding,
+                                          private val listener: ItemsListAdapterActionsListener)
+    : ItemsListViewHolder(binding.root, listener) {
 
     override fun bind(item: ShoppingItem) {
         with(binding) {
@@ -175,12 +173,7 @@ class FavoriteSelectionListItemViewHolder(private val binding: ShoppingItemFavor
             }
             binding.options.visibility = View.GONE
             binding.checkBox.setOnClickListener {
-                if (checked) {
-                    adapter.checkedItems.remove(item)
-                } else {
-                    adapter.checkedItems.add(item)
-                }
-                checked = !checked
+                listener.onItemChecked(item)
             }
         }
         setLeadingIconImage(item.originalCategory)

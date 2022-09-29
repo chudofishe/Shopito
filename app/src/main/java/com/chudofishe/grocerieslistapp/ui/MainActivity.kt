@@ -43,7 +43,7 @@ class MainActivity : AppCompatActivity() {
         appBarConfiguration = AppBarConfiguration(navController.graph, drawerLayout)
         setupActionBarWithNavController(navController, appBarConfiguration)
 
-        navController.navigate(R.id.action_current_list_destination_to_onBoardingHostFragment3)
+//        navController.navigate(R.id.action_current_list_destination_to_onBoardingHostFragment3)
     }
 
     override fun onSupportNavigateUp(): Boolean {
