@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/current_list_destination">
+
+    <fragment
+        android:id="@+id/current_list_destination"
+        android:name="com.chudofishe.grocerieslistapp.ui.current_list_screen.ActiveListFragment"
+        android:label="@string/active_list_title"
+        tools:layout="@layout/fragment_active_list" >
+        <argument
+            android:name="listId"
+            app:argType="long"
+            android:defaultValue="-1L" />
+        <action
+            android:id="@+id/action_current_list_destination_to_favoriteProductsFragment"
+            app:destination="@id/favoriteProductsFragment" />
+        <argument
+            android:name="selectedFavItems"
+            app:argType="com.chudofishe.grocerieslistapp.data.model.ShoppingItem[]"
+            app:nullable="true"
+            android:defaultValue="@null" />
+        <action
+            android:id="@+id/action_current_list_destination_to_onBoardingHostFragment3"
+            app:destination="@id/onBoardingHostFragment"
+            app:popUpTo="@id/current_list_destination"
+            app:popUpToInclusive="true" />
+    </fragment>
+    <fragment
+        android:id="@+id/history_list_destination"
+        android:name="com.chudofishe.grocerieslistapp.ui.history_screen.HistoryFragment"
+        android:label="HistoryFragment"
+        tools:layout="@layout/fragment_history_list">
+        <action
+            android:id="@+id/action_history_list_destination_to_current_list_destination"
+            app:destination="@id/current_list_destination"
+            app:launchSingleTop="false"
+            app:popUpTo="@id/current_list_destination"
+            app:popUpToInclusive="true" />
+    </fragment>
+    <fragment
+        android:id="@+id/favorites_destination"
+        android:name="com.chudofishe.grocerieslistapp.ui.favorites_screen.FavoritesFragment"
+        android:label="FavoritesListFragment"
+        tools:layout="@layout/fragment_favorites">
+    </fragment>
+    <fragment
+        android:id="@+id/favorite_lists_destination"
+        android:name="com.chudofishe.grocerieslistapp.ui.favorites_screen.FavoriteListsFragment"
+        android:label="FavoriteListsFragment"
+        tools:layout="@layout/fragment_history_list">
+        <action
+            android:id="@+id/action_favorite_lists_destination_to_current_list_destination"
+            app:destination="@id/current_list_destination"
+            app:popUpTo="@id/current_list_destination"
+            app:popUpToInclusive="true" />
+    </fragment>
+    <fragment
+        android:id="@+id/favoriteProductsFragment"
+        android:name="com.chudofishe.grocerieslistapp.ui.favorites_screen.FavoriteProductsFragment"
+        android:label="FavoriteProductsFragment"
+        tools:layout="@layout/fragment_favorite_products">
+        <action
+            android:id="@+id/action_favoriteProductsFragment_to_current_list_destination"
+            app:destination="@id/current_list_destination"
+            app:popUpTo="@id/current_list_destination"
+            app:popUpToInclusive="true" />
+        <argument
+            android:name="selectionMode"
+            app:argType="boolean"
+            android:defaultValue="false" />
+    </fragment>
+    <fragment
+        android:id="@+id/onBoardingHostFragment"
+        android:name="com.chudofishe.grocerieslistapp.ui.onboarding_screen.OnBoardingHostFragment"
+        android:label="OnBoardingHostFragment" >
+        <action
+            android:id="@+id/action_onBoardingHostFragment_to_current_list_destination"
+            app:destination="@id/current_list_destination"
+            app:launchSingleTop="false"
+            app:popUpTo="@id/onBoardingHostFragment"
+            app:popUpToInclusive="true" />
+    </fragment>
+</navigation>

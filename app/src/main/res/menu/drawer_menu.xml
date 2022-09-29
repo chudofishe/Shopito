@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <group
+        android:id="@+id/lists_destinations"
+        android:checkableBehavior="single">
+
+        <item
+            android:id="@+id/current_list_destination"
+            android:icon="@drawable/ic_baseline_format_list_numbered_24"
+            android:title="@string/active" />
+
+        <item
+            android:id="@+id/history_list_destination"
+            android:icon="@drawable/ic_baseline_history_24"
+            android:title="@string/history"/>
+
+        <item
+            android:id="@+id/favorites_destination"
+            android:icon="@drawable/ic_baseline_favorite_border_24"
+            android:title="@string/favorites"/>
+    </group>
+
+    <group
+        android:id="@+id/other_destinations"
+        android:checkableBehavior="single">
+
+        <item
+            android:id="@+id/settings_destination"
+            android:icon="@drawable/ic_baseline_settings_24"
+            android:title="@string/settings"/>
+
+        <item
+            android:id="@+id/help_destination"
+            android:icon="@drawable/ic_baseline_help_outline_24"
+            android:title="@string/help"/>
+    </group>
+</menu>

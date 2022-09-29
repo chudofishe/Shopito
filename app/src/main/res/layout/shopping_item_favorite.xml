@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:clickable="true"
+    android:focusable="true"
+    android:layout_width="match_parent"
+    android:orientation="vertical"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/category_icon"
+            android:layout_width="@dimen/shopping_item_trailing_element_size"
+            android:layout_height="@dimen/shopping_item_trailing_element_size"
+            android:layout_gravity="center"
+            android:src="@drawable/icons8_babys_room_100" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/text"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="TextView"
+            android:padding="8dp"
+            android:textAppearance="?attr/textAppearanceBody1"
+            tools:text="1. Generic long item (x2) x300g"/>
+
+        <FrameLayout
+            android:layout_width="@dimen/shopping_item_trailing_element_size"
+            android:layout_height="@dimen/shopping_item_trailing_element_size"
+            android:layout_gravity="center">
+
+            <ImageButton
+                android:id="@+id/options"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                style="?android:attr/actionOverflowButtonStyle"/>
+
+            <CheckBox
+                android:id="@+id/checkBox"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+        </FrameLayout>
+
+    </LinearLayout>
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/properties"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_marginStart="@dimen/shopping_item_trailing_element_size"
+        android:visibility="gone"
+        android:padding="8dp"
+        tools:text="1. Generic long item (x2) x300g"
+        tools:visibility="visible"/>
+
+</LinearLayout>
+
