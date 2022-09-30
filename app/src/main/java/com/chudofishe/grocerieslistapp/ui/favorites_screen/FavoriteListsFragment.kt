@@ -21,7 +21,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
-class FavoriteListsFragment : BaseFragment<FavoriteListsViewModel>() {
+class FavoriteListsFragment : BaseFragment<FavoriteListsViewModel>(), HistoryListAdapterActionsListener {
 
     private var _binding: FragmentHistoryListBinding? = null
     private val binding: FragmentHistoryListBinding
@@ -54,25 +54,25 @@ class FavoriteListsFragment : BaseFragment<FavoriteListsViewModel>() {
             }
         }
 
-        adapter = HistoryListAdapter(object : HistoryListAdapterActionsListener {
-            override fun update(item: ShoppingList) {
-                viewModel.update(item)
-            }
-
-            override fun onSubListItemClicked(item: ShoppingItem) {
-                viewModel.addShoppingItemToFavorites(item)
-            }
-
-            override fun navigate(itemId: Long) {
-                val directions = FavoriteListsFragmentDirections.actionFavoriteListsDestinationToCurrentListDestination(itemId)
-                viewModel.navigate(directions)
-            }
-        }, isFavoritesListAdapter = true)
+        adapter = HistoryListAdapter(this, isFavoritesListAdapter = true)
 
         favoritesList.adapter = adapter
         favoritesList.addItemDecoration(
             MarginItemDecoration(resources.getDimension(R.dimen.card_spacing).toInt())
         )
+    }
+
+    override fun onFavoriteButtonClicked(item: ShoppingList) {
+        viewModel.update(item)
+    }
+
+    override fun onSubListItemClicked(item: ShoppingItem) {
+        viewModel.addShoppingItemToFavorites(item)
+    }
+
+    override fun onSetActiveButtonClicked(list: ShoppingList) {
+        val directions = FavoriteListsFragmentDirections.actionFavoriteListsDestinationToCurrentListDestination(list)
+        viewModel.navigate(directions)
     }
 
     override fun onDestroyView() {

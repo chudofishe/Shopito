@@ -11,9 +11,10 @@
         android:label="@string/active_list_title"
         tools:layout="@layout/fragment_active_list" >
         <argument
-            android:name="listId"
-            app:argType="long"
-            android:defaultValue="-1L" />
+            android:name="list"
+            app:argType="com.chudofishe.grocerieslistapp.data.model.ShoppingList"
+            android:defaultValue="@null"
+            app:nullable="true" />
         <action
             android:id="@+id/action_current_list_destination_to_favoriteProductsFragment"
             app:destination="@id/favoriteProductsFragment" />

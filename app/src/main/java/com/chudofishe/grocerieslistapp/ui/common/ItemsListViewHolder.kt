@@ -32,6 +32,7 @@ abstract class ItemsListViewHolder(view: View,
 }
 
 class ActiveListItemViewHolder(private val binding: ShoppingItemBinding,
+                               private val adapter: ItemsListAdapter,
                                private val listener: ItemsListAdapterActionsListener)
     : ItemsListViewHolder(binding.root, listener) {
 
@@ -44,7 +45,6 @@ class ActiveListItemViewHolder(private val binding: ShoppingItemBinding,
             }
             remove.setOnClickListener {
                 listener.onRemoveButtonClicked(item)
-
             }
             root.setOnClickListener {
                 listener.onItemClicked(item)

@@ -13,6 +13,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import java.time.LocalDate
+import java.util.*
 import javax.inject.Inject
 
 @HiltViewModel
@@ -23,10 +24,15 @@ class ActiveListViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle
 ) : BaseViewModel(shoppingItemDao) {
 
+    data class ActiveStateWrapper(
+        private val id: UUID = UUID.randomUUID(),
+        val state: ShoppingList = ShoppingList(),
+    )
+
     private val _didWatchOnBoarding = MutableSharedFlow<Boolean>()
     val didWatchOnBoarding = _didWatchOnBoarding.asSharedFlow()
 
-    private val _activeListState = MutableStateFlow(ShoppingList())
+    private val _activeListState = MutableStateFlow(ActiveStateWrapper())
     val activeListState = _activeListState.asStateFlow()
 
     private val _selectedItems = MutableSharedFlow<Array<ShoppingItem>>()
@@ -34,10 +40,17 @@ class ActiveListViewModel @Inject constructor(
 
 
     init {
-        val historyListId: Long? = savedStateHandle["listId"]
+        val historizedList: ShoppingList? = savedStateHandle["list"]
+        val currentState: ShoppingList? = savedStateHandle["currentState"]
         val selectedItems: Array<ShoppingItem>? = savedStateHandle["selectedFavItems"]
         viewModelScope.launch {
-            _activeListState.value = savedStateHandle["currentState"] ?: ShoppingList()
+            if (historizedList != null) {
+                _activeListState.value = ActiveStateWrapper(state = historizedList)
+            } else if (currentState != null) {
+                _activeListState.value = ActiveStateWrapper(state = currentState)
+            } else {
+                _activeListState.value = ActiveStateWrapper()
+            }
             selectedItems?.let {
                 this@ActiveListViewModel._selectedItems.emit(it)
             }
@@ -63,7 +76,7 @@ class ActiveListViewModel @Inject constructor(
                 items = items
             )
             sharedPrefDataStore.saveTempState(state)
-            _activeListState.emit(state)
+//            _activeListState.emit(state)
         }
     }
 
@@ -80,52 +93,53 @@ class ActiveListViewModel @Inject constructor(
     }
 
     fun removeItem(item: ShoppingItem) {
-        val items = _activeListState.value.items.toMutableList()
+        val items = _activeListState.value.state.items.toMutableList()
         items.remove(item)
-        updateItems(items)
+        updateItemsState(items)
     }
 
     fun removeItemsList(list: List<ShoppingItem>) {
-        val items = _activeListState.value.items.toMutableList()
+        val items = _activeListState.value.state.items.toMutableList()
         items.removeAll(list)
-        updateItems(items)
+        updateItemsState(items)
     }
 
     fun addItem(item: ShoppingItem) {
-        val items = _activeListState.value.items.toMutableList()
+        val items = _activeListState.value.state.items.toMutableList()
         items.add(item)
-        updateItems(items)
+        updateItemsState(items)
+    }
+
+    private fun addItemsList(list: List<ShoppingItem>) {
+        val items = _activeListState.value.state.items.toMutableList()
+        items.addAll(list)
+        updateItemsState(items)
     }
 
     fun updateItem(item: ShoppingItem) {
-        val items = _activeListState.value.items.toMutableList()
+        val items = _activeListState.value.state.items.toMutableList()
         items.remove(item)
-        items.add(item.apply {
-            currentCategory = if (currentCategory == Category.DONE) originalCategory else Category.DONE
-        })
-        updateItems(items)
+        items.add(item.apply { currentCategory = if (currentCategory == Category.DONE) originalCategory else Category.DONE })
+        updateItemsState(items)
     }
 
     fun updateItemsList(list: List<ShoppingItem>) {
-        val items = _activeListState.value.items.toMutableList()
-        items.removeAll(list)
+        removeItemsList(list)
         list.forEach {
             it.currentCategory = if (it.currentCategory == Category.DONE) it.originalCategory else Category.DONE
         }
-        items.addAll(list)
-        updateItems(items)
+        addItemsList(list)
     }
 
     fun clearState() {
         viewModelScope.launch {
-            _activeListState.value = ShoppingList()
+            _activeListState.value = ActiveStateWrapper()
         }
     }
 
-    private fun updateItems(items: List<ShoppingItem>) {
-        viewModelScope.launch {
-            _activeListState.update { it.copy(items = items) }
-        }
+    private fun updateItemsState(items: List<ShoppingItem>) {
+        val state = _activeListState.value.state.also { it.items = items }
+        _activeListState.value = ActiveStateWrapper(state = state)
     }
 
     fun setTitle(title: String) {
@@ -137,7 +151,7 @@ class ActiveListViewModel @Inject constructor(
     }
 
     override fun onCleared() {
-        saveCurrentState(_activeListState.value)
+        saveCurrentState(_activeListState.value.state)
     }
 
 }

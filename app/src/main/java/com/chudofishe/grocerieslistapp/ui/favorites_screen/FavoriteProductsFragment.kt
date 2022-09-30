@@ -103,7 +103,7 @@ class FavoriteProductsFragment : BaseFragment<FavoriteProductsViewModel>() {
         lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.productsList.collect {
-                    adapter.submitList(it)
+                    adapter.setItemsList(it)
                 }
             }
         }
