@@ -24,7 +24,19 @@ data class ShoppingList(
     var items: List<ShoppingItem> = emptyList(),
     @Serializable(with = LocalDateSerializer::class)
     var date: LocalDate = LocalDate.now(),
-) : Parcelable
+) : Parcelable {
+
+    fun resetDoneItems() {
+        this.items.forEach { item ->
+            if (item.currentCategory == Category.DONE) item.currentCategory = item.originalCategory
+        }
+    }
+
+    fun isCompleted(): Boolean {
+        this.items.forEach { if (it.currentCategory != Category.DONE) return false }
+        return true
+    }
+}
 
 object LocalDateSerializer : KSerializer<LocalDate> {
     override val descriptor: SerialDescriptor

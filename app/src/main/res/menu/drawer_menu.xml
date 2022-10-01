@@ -5,7 +5,7 @@
         android:checkableBehavior="single">
 
         <item
-            android:id="@+id/current_list_destination"
+            android:id="@+id/active_list_destination"
             android:icon="@drawable/ic_baseline_format_list_numbered_24"
             android:title="@string/active" />
 

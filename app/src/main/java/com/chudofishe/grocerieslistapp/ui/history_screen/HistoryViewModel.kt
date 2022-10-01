@@ -1,5 +1,6 @@
 package com.chudofishe.grocerieslistapp.ui.history_screen
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.chudofishe.grocerieslistapp.data.dao.ShoppingItemDao
@@ -47,5 +48,10 @@ class HistoryViewModel @Inject constructor(
         viewModelScope.launch {
             shoppingListDao.update(list)
         }
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        Log.d(this.javaClass.name, "onCleared")
     }
 }

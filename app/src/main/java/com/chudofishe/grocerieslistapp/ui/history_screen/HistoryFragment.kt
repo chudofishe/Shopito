@@ -97,7 +97,7 @@ class HistoryFragment : BaseFragment<HistoryViewModel>(), HistoryListAdapterActi
     }
 
     override fun onSetActiveButtonClicked(list: ShoppingList) {
-        val directions = HistoryFragmentDirections.actionHistoryListDestinationToCurrentListDestination(list)
+        val directions = HistoryFragmentDirections.actionHistoryListDestinationToActiveListDestination(list)
         viewModel.navigate(directions)
     }
 

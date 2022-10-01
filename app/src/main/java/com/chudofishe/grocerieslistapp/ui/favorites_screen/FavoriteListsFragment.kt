@@ -71,7 +71,7 @@ class FavoriteListsFragment : BaseFragment<FavoriteListsViewModel>(), HistoryLis
     }
 
     override fun onSetActiveButtonClicked(list: ShoppingList) {
-        val directions = FavoriteListsFragmentDirections.actionFavoriteListsDestinationToCurrentListDestination(list)
+        val directions = FavoritesFragmentDirections.actionFavoritesDestinationToActiveListDestination(list)
         viewModel.navigate(directions)
     }
 

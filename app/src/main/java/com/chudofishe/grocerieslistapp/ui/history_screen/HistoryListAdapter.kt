@@ -134,10 +134,13 @@ class HistoryListAdapter(private val listener: HistoryListAdapterActionsListener
                 } else {
                     collapseButton.visibility = View.GONE
                 }
-                item.title?.let {
+                if (item.title != null) {
                     title.visibility = View.VISIBLE
-                    title.text = it
+                    title.text = item.title
+                } else {
+                    title.visibility = View.GONE
                 }
+
                 optionsIb.setOnClickListener(showPopUpMenu)
                 favoriteIb.setImageResource(if (item.isFavorite) {
                     R.drawable.ic_baseline_favorite_24

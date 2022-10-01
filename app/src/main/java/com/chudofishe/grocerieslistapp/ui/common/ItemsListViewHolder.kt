@@ -32,7 +32,6 @@ abstract class ItemsListViewHolder(view: View,
 }
 
 class ActiveListItemViewHolder(private val binding: ShoppingItemBinding,
-                               private val adapter: ItemsListAdapter,
                                private val listener: ItemsListAdapterActionsListener)
     : ItemsListViewHolder(binding.root, listener) {
 
@@ -69,7 +68,7 @@ class ActiveListItemViewHolder(private val binding: ShoppingItemBinding,
 }
 
 class HistoryListItemViewHolder(private val binding: ShoppingItemBinding,
-                                private val listener: ItemsListAdapterActionsListener)
+                                listener: ItemsListAdapterActionsListener)
     : ItemsListViewHolder(binding.root, listener) {
 
     override fun bind(item: ShoppingItem) {
@@ -161,8 +160,11 @@ class FavoriteEditableListItemViewHolder(private val binding: ShoppingItemFavori
 }
 
 class FavoriteSelectionListItemViewHolder(private val binding: ShoppingItemFavoriteBinding,
-                                          private val listener: ItemsListAdapterActionsListener)
+                                          private val checkedItems: MutableList<ShoppingItem>,
+                                          listener: ItemsListAdapterActionsListener)
     : ItemsListViewHolder(binding.root, listener) {
+
+    private var checked = false
 
     override fun bind(item: ShoppingItem) {
         with(binding) {
@@ -173,7 +175,11 @@ class FavoriteSelectionListItemViewHolder(private val binding: ShoppingItemFavor
             }
             binding.options.visibility = View.GONE
             binding.checkBox.setOnClickListener {
-                listener.onItemChecked(item)
+                if (!checked)
+                    checkedItems.add(item)
+                else
+                    checkedItems.remove(item)
+                checked = !checked
             }
         }
         setLeadingIconImage(item.originalCategory)

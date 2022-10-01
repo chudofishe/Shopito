@@ -56,7 +56,7 @@ class OnBoardingFragment : Fragment() {
                 1 -> {
                     lottieAnimation.apply {
                         setAnimation(R.raw.onboarding2)
-                        repeatCount = 1
+                        repeatCount = 0
                     }
                     onBoardingTitle.setText(R.string.onboarding_title_2)
                     onBoardingSubTitle.setText(R.string.onboarding_subtitle_2)

@@ -8,7 +8,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import com.chudofishe.grocerieslistapp.ui.MainActivity
-import dagger.hilt.android.AndroidEntryPoint
+import com.chudofishe.grocerieslistapp.ui.common.util.NavigationCommand
 import kotlinx.coroutines.launch
 
 

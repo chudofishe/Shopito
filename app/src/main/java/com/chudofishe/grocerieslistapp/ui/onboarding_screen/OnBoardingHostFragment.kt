@@ -12,7 +12,9 @@ import androidx.viewpager2.widget.ViewPager2
 import com.chudofishe.grocerieslistapp.databinding.FragmentOnboardingHostBinding
 import com.chudofishe.grocerieslistapp.ui.common.BaseFragment
 import com.tbuonomo.viewpagerdotsindicator.DotsIndicator
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class OnBoardingHostFragment : BaseFragment<OnBoardingViewModel>() {
 
     private var _binding: FragmentOnboardingHostBinding? = null
@@ -50,7 +52,8 @@ class OnBoardingHostFragment : BaseFragment<OnBoardingViewModel>() {
 
     fun finishUnBoarding() {
         (activity as AppCompatActivity).supportActionBar?.show()
-        val action = OnBoardingHostFragmentDirections.actionOnBoardingHostFragmentToCurrentListDestination()
+        viewModel.saveWatchedOnBoarding()
+        val action = OnBoardingHostFragmentDirections.actionOnBoardingHostFragmentToActiveListDestination()
         viewModel.navigate(action)
     }
 

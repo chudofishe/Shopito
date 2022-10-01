@@ -1,4 +1,4 @@
-package com.chudofishe.grocerieslistapp.ui.current_list_screen
+package com.chudofishe.grocerieslistapp.ui.active_list_screen
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
@@ -21,76 +21,65 @@ class ActiveListViewModel @Inject constructor(
     private val shoppingListDao: ShoppingListDao,
     private val sharedPrefDataStore: SharedPrefDataStore,
     shoppingItemDao: ShoppingItemDao,
-    private val savedStateHandle: SavedStateHandle
+    savedStateHandle: SavedStateHandle
 ) : BaseViewModel(shoppingItemDao) {
+
+    /* Wrap state to emit data on each update and keep track of list status */
 
     data class ActiveStateWrapper(
         private val id: UUID = UUID.randomUUID(),
         val state: ShoppingList = ShoppingList(),
+        val listStatus: ListStatus = ListStatus.EMPTY
     )
 
-    private val _didWatchOnBoarding = MutableSharedFlow<Boolean>()
-    val didWatchOnBoarding = _didWatchOnBoarding.asSharedFlow()
+    enum class ListStatus {
+        EMPTY, ACTIVE
+    }
+
+    private var status = ListStatus.EMPTY
 
     private val _activeListState = MutableStateFlow(ActiveStateWrapper())
     val activeListState = _activeListState.asStateFlow()
 
-    private val _selectedItems = MutableSharedFlow<Array<ShoppingItem>>()
-    val selectedItems = _selectedItems.asSharedFlow()
+    private val _showOnCompletedDialog = MutableSharedFlow<Boolean>()
+    val showOnCompletedDialog = _showOnCompletedDialog.asSharedFlow()
 
-
+    /* Get data/state from savedStateHandle via nav args and serialized state from shared prefs */
     init {
+        val currentState = getCurrentStateFromPrefs()
         val historizedList: ShoppingList? = savedStateHandle["list"]
-        val currentState: ShoppingList? = savedStateHandle["currentState"]
         val selectedItems: Array<ShoppingItem>? = savedStateHandle["selectedFavItems"]
         viewModelScope.launch {
             if (historizedList != null) {
-                _activeListState.value = ActiveStateWrapper(state = historizedList)
-            } else if (currentState != null) {
-                _activeListState.value = ActiveStateWrapper(state = currentState)
+                _activeListState.value = ActiveStateWrapper(
+                    state = historizedList.apply { id = 0; resetDoneItems() },
+                    listStatus = ListStatus.ACTIVE)
             } else {
-                _activeListState.value = ActiveStateWrapper()
+                _activeListState.value = ActiveStateWrapper(
+                    state = currentState,
+                    listStatus = if (currentState.items.isEmpty()) ListStatus.EMPTY else ListStatus.ACTIVE)
             }
             selectedItems?.let {
-                this@ActiveListViewModel._selectedItems.emit(it)
+                addItemsList(it.toList())
             }
         }
     }
 
-    fun saveList(title: String?, list: List<ShoppingItem>) {
-        val newList = ShoppingList(
-            title = title,
-            date = LocalDate.now(),
-            items = list
-        )
-        clearState()
+    private fun saveStateToDB(list: ShoppingList) {
         viewModelScope.launch {
-            shoppingListDao.insert(newList)
+            shoppingListDao.insert(list.apply { date = LocalDate.now() })
         }
     }
 
-    fun saveTempState(title: String?, items: List<ShoppingItem>) {
-        viewModelScope.launch {
-            val state = ShoppingList(
-                title = title,
-                items = items
-            )
-            sharedPrefDataStore.saveTempState(state)
-//            _activeListState.emit(state)
-        }
+    fun saveCurrentStateToPrefs() {
+        sharedPrefDataStore.saveTempState(_activeListState.value.state)
     }
 
-    private suspend fun getHistorizedListState(id: Long): ShoppingList? {
-        val list = shoppingListDao.getById(id)
-        list?.let { it.items.forEach { item ->
-            if (item.currentCategory == Category.DONE) item.currentCategory = item.originalCategory
-        } }
-        return list
-    }
-
-    private fun getTempState(): ShoppingList {
+    private fun getCurrentStateFromPrefs(): ShoppingList {
         return sharedPrefDataStore.getTempState() ?: ShoppingList()
     }
+
+    /* START MODIFY STATE ITEMS LIST */
 
     fun removeItem(item: ShoppingItem) {
         val items = _activeListState.value.state.items.toMutableList()
@@ -124,34 +113,56 @@ class ActiveListViewModel @Inject constructor(
     }
 
     fun updateItemsList(list: List<ShoppingItem>) {
-        removeItemsList(list)
+        val items = _activeListState.value.state.items.toMutableList()
+        items.removeAll(list)
         list.forEach {
             it.currentCategory = if (it.currentCategory == Category.DONE) it.originalCategory else Category.DONE
         }
-        addItemsList(list)
+        items.addAll(list)
+        updateItemsState(items)
     }
 
-    fun clearState() {
-        viewModelScope.launch {
-            _activeListState.value = ActiveStateWrapper()
-        }
+    fun clearItemsList() {
+        updateItemsState(emptyList())
+    }
+
+    fun completeItemsList() {
+        onListCompleted(_activeListState.value.state)
     }
 
     private fun updateItemsState(items: List<ShoppingItem>) {
-        val state = _activeListState.value.state.also { it.items = items }
-        _activeListState.value = ActiveStateWrapper(state = state)
+        updateState(_activeListState.value.state.also { it.items = items })
     }
 
-    fun setTitle(title: String) {
-
+    fun updateTitle(title: String?) {
+        updateState(_activeListState.value.state.also { it.title = title }, false)
     }
 
-    private fun saveCurrentState(list: ShoppingList) {
-        savedStateHandle["currentState"] = list
+    /* END MODIFY STATE ITEMS LIST */
+
+    private fun onListCleared() {
+        viewModelScope.launch {
+            _activeListState.value = ActiveStateWrapper(listStatus = ListStatus.EMPTY)
+        }
     }
 
-    override fun onCleared() {
-        saveCurrentState(_activeListState.value.state)
+    private fun onListCompleted(state: ShoppingList) {
+        viewModelScope.launch {
+            saveStateToDB(state)
+            _activeListState.value = ActiveStateWrapper()
+            _showOnCompletedDialog.emit(true)
+        }
     }
 
+    private fun updateState(state: ShoppingList, updateListStatus: Boolean = true) {
+        if (state.items.isEmpty()) {
+            onListCleared()
+        } else if (state.isCompleted()) {
+            onListCompleted(state)
+        } else if (updateListStatus){
+            _activeListState.value = ActiveStateWrapper(state = state, listStatus = ListStatus.ACTIVE)
+        } else {
+            _activeListState.value = ActiveStateWrapper(state = state, listStatus = _activeListState.value.listStatus)
+        }
+    }
 }

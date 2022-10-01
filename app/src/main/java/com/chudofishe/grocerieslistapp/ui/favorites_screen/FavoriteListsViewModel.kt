@@ -1,5 +1,6 @@
 package com.chudofishe.grocerieslistapp.ui.favorites_screen
 
+import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.chudofishe.grocerieslistapp.data.dao.ShoppingItemDao
 import com.chudofishe.grocerieslistapp.data.dao.ShoppingListDao
@@ -35,4 +36,8 @@ class FavoriteListsViewModel @Inject constructor(
         }
     }
 
+    override fun onCleared() {
+        super.onCleared()
+        Log.d(this.javaClass.name, "onCleared")
+    }
 }
