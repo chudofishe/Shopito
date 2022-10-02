@@ -3,6 +3,7 @@ package com.chudofishe.grocerieslistapp.ui.history_screen
 import android.app.AlertDialog
 import android.os.Bundle
 import android.view.*
+import android.widget.TextView
 import androidx.core.view.MenuHost
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.viewModels
@@ -29,6 +30,7 @@ class HistoryFragment : BaseFragment<HistoryViewModel>(), HistoryListAdapterActi
 
     private lateinit var historyList: RecyclerView
     private lateinit var adapter: HistoryListAdapter
+    private lateinit var tooltip: TextView
 
     override val viewModel: HistoryViewModel by viewModels()
 
@@ -39,6 +41,7 @@ class HistoryFragment : BaseFragment<HistoryViewModel>(), HistoryListAdapterActi
         _binding = FragmentHistoryListBinding.inflate(inflater, container, false)
 
         historyList = binding.historyList
+        tooltip = binding.tooltipText
 
         return binding.root
     }
@@ -50,6 +53,11 @@ class HistoryFragment : BaseFragment<HistoryViewModel>(), HistoryListAdapterActi
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.historyList.collect {
                     adapter.submitList(it)
+                    if (it.isEmpty()) {
+                        tooltip.setText(R.string.tooltip_history_list_screen)
+                    } else {
+                        tooltip.visibility = View.GONE
+                    }
                 }
             }
         }

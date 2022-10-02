@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -29,6 +30,7 @@ class FavoriteListsFragment : BaseFragment<FavoriteListsViewModel>(), HistoryLis
 
     private lateinit var favoritesList: RecyclerView
     private lateinit var adapter: HistoryListAdapter
+    private lateinit var tooltip: TextView
 
     override val viewModel: FavoriteListsViewModel by viewModels()
 
@@ -39,6 +41,7 @@ class FavoriteListsFragment : BaseFragment<FavoriteListsViewModel>(), HistoryLis
         _binding = FragmentHistoryListBinding.inflate(inflater, container, false)
 
         favoritesList = binding.historyList
+        tooltip = binding.tooltipText
 
         return binding.root
     }
@@ -50,6 +53,12 @@ class FavoriteListsFragment : BaseFragment<FavoriteListsViewModel>(), HistoryLis
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.favoritesList.collect {
                     adapter.submitList(it)
+                    if (it.isEmpty()) {
+                        tooltip.setText(R.string.tooltip_favorite_list_screen)
+                        tooltip.visibility = View.VISIBLE
+                    } else {
+                        tooltip.visibility = View.GONE
+                    }
                 }
             }
         }

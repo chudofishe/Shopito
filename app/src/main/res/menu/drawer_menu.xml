@@ -28,10 +28,5 @@
             android:id="@+id/settings_destination"
             android:icon="@drawable/ic_baseline_settings_24"
             android:title="@string/settings"/>
-
-        <item
-            android:id="@+id/help_destination"
-            android:icon="@drawable/ic_baseline_help_outline_24"
-            android:title="@string/help"/>
     </group>
 </menu>

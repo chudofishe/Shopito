@@ -5,6 +5,8 @@ import android.util.Log
 import android.view.*
 import android.widget.ImageButton
 import android.widget.LinearLayout
+import android.widget.TextView
+import androidx.activity.addCallback
 import androidx.core.view.MenuHost
 import androidx.core.view.MenuProvider
 import androidx.core.view.updateMargins
@@ -51,6 +53,7 @@ class FavoriteProductsFragment : BaseFragment<FavoriteProductsViewModel>(), Item
     private lateinit var adapter: ItemsListAdapter
     private lateinit var bottomSheet: LinearLayout
     private lateinit var bottomSheetBehavior: BottomSheetBehavior<LinearLayout>
+    private lateinit var tooltip: TextView
 
     private var editedItemId: Int? = null
 
@@ -81,6 +84,7 @@ class FavoriteProductsFragment : BaseFragment<FavoriteProductsViewModel>(), Item
             this@FavoriteProductsFragment.bottomSheet = bottomSheet.root
             itemDescription = bottomSheet.itemDescription
             categoriesGroup = bottomSheet.categoriesChipGroup
+            tooltip = tooltipText
 
             bottomSheet.addFavoriteButton.visibility = View.GONE
         }
@@ -105,6 +109,12 @@ class FavoriteProductsFragment : BaseFragment<FavoriteProductsViewModel>(), Item
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.productsList.collect {
                     adapter.setItemsList(it)
+                    if (it.isEmpty()) {
+                        tooltip.setText(R.string.tooltip_favorite_products_screen)
+                        tooltip.visibility = View.VISIBLE
+                    } else {
+                        tooltip.visibility = View.GONE
+                    }
                 }
             }
         }
@@ -172,6 +182,18 @@ class FavoriteProductsFragment : BaseFragment<FavoriteProductsViewModel>(), Item
         productsList.addItemDecoration(
             MarginItemDecoration(resources.getDimension(R.dimen.shopping_item_spacing).toInt())
         )
+    }
+
+    override fun onStart() {
+        super.onStart()
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
+            if (bottomSheetBehavior.state == BottomSheetBehavior.STATE_EXPANDED) {
+                bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
+            } else {
+                this.remove()
+                requireActivity().onBackPressed()
+            }
+        }
     }
 
     private fun hideBottomSheet() {

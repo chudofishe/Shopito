@@ -11,12 +11,11 @@ import android.view.*
 import android.view.inputmethod.InputMethodManager
 import android.widget.ImageButton
 import android.widget.LinearLayout
+import androidx.activity.addCallback
 import androidx.constraintlayout.widget.Group
-import androidx.core.os.postDelayed
 import androidx.core.view.MenuHost
 import androidx.core.view.MenuProvider
 import androidx.core.widget.NestedScrollView
-import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -38,7 +37,6 @@ import com.google.android.material.chip.ChipGroup
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
@@ -108,7 +106,7 @@ class ActiveListFragment : BaseFragment<ActiveListViewModel>(), CategoryAdapterE
                             titleInput.editText?.text?.clear()
                             doneAnimation.visibility = View.GONE
                             emptyListTooltip.visibility = View.VISIBLE
-                            binding.tooltipText.text = getString(R.string.tooltip_start_text)
+                            binding.tooltipText.text = getString(R.string.tooltip_active_list_empty)
                         }
                         ActiveListViewModel.ListStatus.ACTIVE -> {
                             emptyListTooltip.visibility = View.GONE
@@ -134,8 +132,7 @@ class ActiveListFragment : BaseFragment<ActiveListViewModel>(), CategoryAdapterE
             }
         }
 
-        val menuHost: MenuHost = requireActivity()
-        menuHost.addMenuProvider(object : MenuProvider {
+        requireActivity().addMenuProvider(object : MenuProvider {
             override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
                 menuInflater.inflate(R.menu.active_list_toolbar_menu, menu)
             }
@@ -159,7 +156,7 @@ class ActiveListFragment : BaseFragment<ActiveListViewModel>(), CategoryAdapterE
         doneAnimation.addAnimatorListener(object : AnimatorListener {
             override fun onAnimationEnd(animation: Animator?) {
                 binding.tooltipText.visibility = View.VISIBLE
-                binding.tooltipText.text = getString(R.string.tooltip_done_text)
+                binding.tooltipText.text = getString(R.string.tooltip_active_list_done)
             }
         })
 
@@ -207,6 +204,18 @@ class ActiveListFragment : BaseFragment<ActiveListViewModel>(), CategoryAdapterE
 
         //Add category chips to bottom sheet
         categoriesGroup.init()
+    }
+
+    override fun onStart() {
+        super.onStart()
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
+            if (bottomSheetBehavior.state == BottomSheetBehavior.STATE_EXPANDED) {
+                bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
+            } else {
+                this.remove()
+                requireActivity().onBackPressed()
+            }
+        }
     }
 
     override fun onItemClicked(item: ShoppingItem) {

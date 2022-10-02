@@ -27,7 +27,6 @@ class ItemsListAdapter(private val itemsType: ItemsListAdapterItemType,
         } else if (list.isEmpty()) {
             items.clear()
             notifyDataSetChanged()
-            return
         } else if (list.size < items.size) {
             val iterator = items.iterator()
             while(iterator.hasNext()) {

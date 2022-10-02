@@ -31,9 +31,16 @@
     <string name="uncomplete_all">Uncomplete all</string>
     <string name="menu_edit">Edit</string>
     <!-- Tooltip text -->
-    <string name="tooltip_start_text">Add an item below to create your list</string>
-    <string name="tooltip_done_text">Good Job! List was added to history</string>
+    <string name="tooltip_active_list_empty">
+        • Add an item below to start your list\n\n<br/>
+        • Tap list item to mark it as done\n\n<br/>
+        • Tap and hold to add item to favorites
+    </string>
+    <string name="tooltip_active_list_done">Good Job! List was added to history</string>
     <string name="title_tooltip">Title</string>
+    <string name="tooltip_favorite_products_screen">Your favorite products will be here</string>
+    <string name="tooltip_favorite_list_screen">Your favorite grocery lists will be here</string>
+    <string name="tooltip_history_list_screen">Your past grocery lists will be here</string>
 
     <string name="n_items">%1d items</string>
 
