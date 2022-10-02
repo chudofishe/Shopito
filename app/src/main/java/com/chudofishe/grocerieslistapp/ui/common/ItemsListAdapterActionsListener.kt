@@ -7,5 +7,4 @@ interface ItemsListAdapterActionsListener {
     fun onItemLongClicked(item: ShoppingItem) {}
     fun onRemoveButtonClicked(item: ShoppingItem) {}
     fun onUpdateButtonClicked(item: ShoppingItem) {}
-    fun onItemChecked(item: ShoppingItem) {}
 }

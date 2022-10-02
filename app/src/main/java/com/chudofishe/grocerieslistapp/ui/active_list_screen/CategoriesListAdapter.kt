@@ -13,7 +13,8 @@ import com.chudofishe.grocerieslistapp.data.model.Category
 import com.chudofishe.grocerieslistapp.data.model.ShoppingItem
 import com.chudofishe.grocerieslistapp.ui.common.*
 
-class CategoriesListAdapter(private val onEventListener: CategoryAdapterEventListener) :
+class CategoriesListAdapter(private val onEventListener: CategoryAdapterEventListener,
+                            private val collapseDone: Boolean) :
     RecyclerView.Adapter<CategoriesListAdapter.ViewHolder>(), ItemsListAdapterActionsListener {
 
     private val categories: MutableList<Category> = mutableListOf()
@@ -140,7 +141,7 @@ class CategoriesListAdapter(private val onEventListener: CategoryAdapterEventLis
             binding.title.text = itemView.context.resources.getString(category.text)
             binding.itemsList.adapter = this.adapter
 
-            if (category == Category.DONE) toggleCollapse()
+            if (category == Category.DONE && collapseDone) toggleCollapse()
 
             binding.options.setOnClickListener(showPopUpMenu)
 

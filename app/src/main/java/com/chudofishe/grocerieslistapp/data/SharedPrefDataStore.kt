@@ -15,8 +15,8 @@ import kotlinx.serialization.json.Json
 class SharedPrefDataStore(private val appContext: Context) {
 
     companion object {
-        const val SHARED_PREF_FILE_KEY = "com.chudofishe.grocerieslistapp.SHARED_PREF_KEY"
-        const val SHARED_PREF_ACTIVE_STATE_KEY = "ACTIVE_LIST_STATE"
+        private const val SHARED_PREF_FILE_KEY = "com.chudofishe.grocerieslistapp.SHARED_PREF_KEY"
+        private const val SHARED_PREF_ACTIVE_STATE_KEY = "ACTIVE_LIST_STATE"
     }
 
     fun saveTempState(list: ShoppingList) {

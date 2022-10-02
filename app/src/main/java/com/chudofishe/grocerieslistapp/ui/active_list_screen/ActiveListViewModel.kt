@@ -2,6 +2,7 @@ package com.chudofishe.grocerieslistapp.ui.active_list_screen
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
+import com.chudofishe.grocerieslistapp.data.SharedPrefAppStore
 import com.chudofishe.grocerieslistapp.data.SharedPrefDataStore
 import com.chudofishe.grocerieslistapp.data.dao.ShoppingItemDao
 import com.chudofishe.grocerieslistapp.data.dao.ShoppingListDao
@@ -21,7 +22,8 @@ class ActiveListViewModel @Inject constructor(
     private val shoppingListDao: ShoppingListDao,
     private val sharedPrefDataStore: SharedPrefDataStore,
     shoppingItemDao: ShoppingItemDao,
-    savedStateHandle: SavedStateHandle
+    savedStateHandle: SavedStateHandle,
+    sharedPrefAppStore: SharedPrefAppStore
 ) : BaseViewModel(shoppingItemDao) {
 
     /* Wrap state to emit data on each update and keep track of list status */
@@ -36,7 +38,8 @@ class ActiveListViewModel @Inject constructor(
         EMPTY, ACTIVE
     }
 
-    private var status = ListStatus.EMPTY
+    val collapseDoneCategory: Boolean = sharedPrefAppStore.getCollapseDone()
+    private val autoCompleteList: Boolean = sharedPrefAppStore.getCompleteLists()
 
     private val _activeListState = MutableStateFlow(ActiveStateWrapper())
     val activeListState = _activeListState.asStateFlow()
@@ -52,7 +55,7 @@ class ActiveListViewModel @Inject constructor(
         viewModelScope.launch {
             if (historizedList != null) {
                 _activeListState.value = ActiveStateWrapper(
-                    state = historizedList.apply { id = 0; resetDoneItems() },
+                    state = historizedList.apply { id = 0; isFavorite = false; resetDoneItems() },
                     listStatus = ListStatus.ACTIVE)
             } else {
                 _activeListState.value = ActiveStateWrapper(
@@ -127,7 +130,9 @@ class ActiveListViewModel @Inject constructor(
     }
 
     fun completeItemsList() {
-        onListCompleted(_activeListState.value.state)
+        if (_activeListState.value.state.items.isNotEmpty()) {
+            onListCompleted(_activeListState.value.state)
+        }
     }
 
     private fun updateItemsState(items: List<ShoppingItem>) {
@@ -149,7 +154,7 @@ class ActiveListViewModel @Inject constructor(
     private fun onListCompleted(state: ShoppingList) {
         viewModelScope.launch {
             saveStateToDB(state)
-            _activeListState.value = ActiveStateWrapper()
+            _activeListState.value = ActiveStateWrapper(listStatus = ListStatus.EMPTY)
             _showOnCompletedDialog.emit(true)
         }
     }
@@ -157,7 +162,7 @@ class ActiveListViewModel @Inject constructor(
     private fun updateState(state: ShoppingList, updateListStatus: Boolean = true) {
         if (state.items.isEmpty()) {
             onListCleared()
-        } else if (state.isCompleted()) {
+        } else if (state.isCompleted() && autoCompleteList) {
             onListCompleted(state)
         } else if (updateListStatus){
             _activeListState.value = ActiveStateWrapper(state = state, listStatus = ListStatus.ACTIVE)

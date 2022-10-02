@@ -30,6 +30,7 @@
     <string name="menu_set_active">Set as active</string>
     <string name="uncomplete_all">Uncomplete all</string>
     <string name="menu_edit">Edit</string>
+
     <!-- Tooltip text -->
     <string name="tooltip_active_list_empty">
         • Add an item below to start your list\n\n<br/>
@@ -76,4 +77,38 @@
     <string name="onboarding_subtitle_1">Create groceries lists and sort its items by categories</string>
     <string name="onboarding_subtitle_2">Finished lists are stored in history tab for future use</string>
     <string name="onboarding_subtitle_3">Add products to favorites for easier access</string>
+
+    <!-- Shred preferences settings entries -->
+    <string name="settings_category_title_appearance">Appearance</string>
+    <string name="settings_category_title_active_list">Active list</string>
+    <string name="settings_category_title_storage">Storage</string>
+    <string name="settings_collapse_done_category">Collapse done category</string>
+    <string name="settings_language">Language</string>
+    <string-array name="settings_language_values">
+        <item>English</item>
+        <item>Русский</item>
+    </string-array>
+    <string-array name="settings_theme_values">
+        <item>Light</item>
+        <item>Dark</item>
+    </string-array>
+    <string name="settings_storage_auto_delete">Delete old records</string>
+    <string name="settings_storage_auto_delete_dialog">Delete records older then:</string>
+    <string name="settings_storage_auto_delete_desc">
+        Automatically delete not lists older than certain amount of days (favorite lists are not affected)
+    </string>
+    <string-array name="settings_storage_entries">
+        <item>7 days</item>
+        <item>14 days</item>
+        <item>1 month</item>
+        <item>Never</item>
+    </string-array>
+    <string-array name="settings_storage_values">
+        <item>7</item>
+        <item>14</item>
+        <item>30</item>
+        <item>1000</item>
+    </string-array>
+    <string name="settings_storage_values_default">14</string>
+    <string name="settings_complete_lists">Complete lists automatically</string>
 </resources>

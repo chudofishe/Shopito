@@ -67,8 +67,8 @@
         android:minHeight="0dp"
         android:minWidth="0dp"
         android:layout_gravity="center"
-        android:textColor="@color/primaryDarkColor"
-        app:iconTint="@color/primaryDarkColor"
+        android:textColor="@color/secondaryColor"
+        app:iconTint="@color/secondaryColor"
         style="@style/Widget.MaterialComponents.Button.TextButton.Icon"
         android:text="Add from favorites"
         app:icon="@drawable/ic_baseline_favorite_border_24" />

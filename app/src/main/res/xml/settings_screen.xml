@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory android:title="@string/settings_category_title_active_list">
+        <SwitchPreferenceCompat
+            android:defaultValue="true"
+            app:key="@string/settings_collapse_done_category"
+            app:title="@string/settings_collapse_done_category"/>
+
+        <SwitchPreferenceCompat
+            android:defaultValue="true"
+            app:key="@string/settings_complete_lists"
+            app:title="@string/settings_complete_lists"/>
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="@string/settings_category_title_storage">
+        <ListPreference
+            android:defaultValue="@string/settings_storage_values_default"
+            android:dialogTitle="@string/settings_storage_auto_delete_dialog"
+            android:entries="@array/settings_storage_entries"
+            android:entryValues="@array/settings_storage_values"
+            android:key="@string/settings_storage_auto_delete"
+            android:summary="@string/settings_storage_auto_delete_desc"
+            android:title="@string/settings_storage_auto_delete" />
+    </PreferenceCategory>
+</PreferenceScreen>

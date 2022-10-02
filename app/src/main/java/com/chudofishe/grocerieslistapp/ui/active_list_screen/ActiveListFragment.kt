@@ -1,6 +1,7 @@
 package com.chudofishe.grocerieslistapp.ui.active_list_screen
 
 import android.animation.Animator
+import android.animation.ValueAnimator
 import android.content.Context
 import android.os.Bundle
 import android.os.Handler
@@ -11,11 +12,9 @@ import android.view.*
 import android.view.inputmethod.InputMethodManager
 import android.widget.ImageButton
 import android.widget.LinearLayout
+import android.widget.TextView
 import androidx.activity.addCallback
-import androidx.constraintlayout.widget.Group
-import androidx.core.view.MenuHost
 import androidx.core.view.MenuProvider
-import androidx.core.widget.NestedScrollView
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -27,10 +26,7 @@ import com.chudofishe.grocerieslistapp.data.model.Category
 import com.chudofishe.grocerieslistapp.data.model.ShoppingItem
 import com.chudofishe.grocerieslistapp.databinding.FragmentActiveListBinding
 import com.chudofishe.grocerieslistapp.ui.common.BaseFragment
-import com.chudofishe.grocerieslistapp.ui.common.util.AnimatorListener
-import com.chudofishe.grocerieslistapp.ui.common.util.MarginItemDecoration
-import com.chudofishe.grocerieslistapp.ui.common.util.init
-import com.chudofishe.grocerieslistapp.ui.common.util.toStringOrNull
+import com.chudofishe.grocerieslistapp.ui.common.util.*
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.chip.ChipGroup
@@ -55,9 +51,8 @@ class ActiveListFragment : BaseFragment<ActiveListViewModel>(), CategoryAdapterE
     private lateinit var categoriesGroup: ChipGroup
     private lateinit var categoriesAdapter: CategoriesListAdapter
     private lateinit var categoriesList: RecyclerView
-    private lateinit var doneAnimation: LottieAnimationView
-    private lateinit var emptyListTooltip: Group
-    private lateinit var scrollView: NestedScrollView
+    private lateinit var toolTipAnim: LottieAnimationView
+    private lateinit var toolTipText: TextView
     private lateinit var bottomSheetBehavior: BottomSheetBehavior<LinearLayout>
 
     override fun onCreateView(
@@ -72,11 +67,10 @@ class ActiveListFragment : BaseFragment<ActiveListViewModel>(), CategoryAdapterE
             submitButton = bottomSheet.submit
             itemName = bottomSheet.itemName
             itemDescription = bottomSheet.itemDescription
-            doneAnimation = doneAnim
-            emptyListTooltip = tooltipGroup
+            toolTipAnim = anim
+            toolTipText = tooltipText
             addFavoriteButton = binding.bottomSheet.addFavoriteButton
             this@ActiveListFragment.titleInput = titleInput
-            this@ActiveListFragment.scrollView = scrollView
         }
 
         bottomSheetBehavior = BottomSheetBehavior.from(binding.bottomSheet.root).apply {
@@ -100,20 +94,7 @@ class ActiveListFragment : BaseFragment<ActiveListViewModel>(), CategoryAdapterE
                         }
                     }
                     categoriesAdapter.setList(wrapper.state.items)
-                    when (wrapper.listStatus) {
-                        ActiveListViewModel.ListStatus.EMPTY -> {
-                            titleInput.visibility = View.INVISIBLE
-                            titleInput.editText?.text?.clear()
-                            doneAnimation.visibility = View.GONE
-                            emptyListTooltip.visibility = View.VISIBLE
-                            binding.tooltipText.text = getString(R.string.tooltip_active_list_empty)
-                        }
-                        ActiveListViewModel.ListStatus.ACTIVE -> {
-                            emptyListTooltip.visibility = View.GONE
-                            doneAnimation.visibility = View.INVISIBLE
-                            titleInput.visibility = View.VISIBLE
-                        }
-                    }
+                    setToolTip(wrapper.listStatus)
                 }
             }
         }
@@ -122,11 +103,7 @@ class ActiveListFragment : BaseFragment<ActiveListViewModel>(), CategoryAdapterE
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.showOnCompletedDialog.collect {
                     if (it) {
-                        emptyListTooltip.visibility = View.GONE
-                        doneAnimation.visibility = View.VISIBLE
-                        doneAnimation.playAnimation()
-                        titleInput.visibility = View.INVISIBLE
-                        titleInput.editText?.text?.clear()
+                        setToolTip()
                     }
                 }
             }
@@ -138,7 +115,7 @@ class ActiveListFragment : BaseFragment<ActiveListViewModel>(), CategoryAdapterE
             }
 
             override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
-                when(menuItem.itemId) {
+                when (menuItem.itemId) {
                     R.id.action_clear_list -> viewModel.clearItemsList()
                     R.id.action_mark_list_as_done -> viewModel.completeItemsList()
                     else -> viewModel.navigateBack()
@@ -147,13 +124,13 @@ class ActiveListFragment : BaseFragment<ActiveListViewModel>(), CategoryAdapterE
             }
         }, viewLifecycleOwner, Lifecycle.State.RESUMED)
 
-        categoriesAdapter = CategoriesListAdapter(onEventListener = this)
+        categoriesAdapter = CategoriesListAdapter(this, viewModel.collapseDoneCategory)
         categoriesList.adapter = categoriesAdapter
         categoriesList.addItemDecoration(
             MarginItemDecoration(resources.getDimension(R.dimen.card_spacing).toInt())
         )
 
-        doneAnimation.addAnimatorListener(object : AnimatorListener {
+        toolTipAnim.addAnimatorListener(object : AnimatorListener {
             override fun onAnimationEnd(animation: Animator?) {
                 binding.tooltipText.visibility = View.VISIBLE
                 binding.tooltipText.text = getString(R.string.tooltip_active_list_done)
@@ -167,19 +144,19 @@ class ActiveListFragment : BaseFragment<ActiveListViewModel>(), CategoryAdapterE
                 } else {
                     Category.values()[categoriesGroup.checkedChipId]
                 }
-                viewModel.addItem(ShoppingItem(
-                    text = itemName.text.toString(),
-                    description = itemDescription.text?.toStringOrNull(),
-                    currentCategory = category,
-                    originalCategory = category
-                ))
+                viewModel.addItem(
+                    ShoppingItem(
+                        text = itemName.text.toString(),
+                        description = itemDescription.text?.toStringOrNull(),
+                        currentCategory = category,
+                        originalCategory = category
+                    )
+                )
                 itemName.text?.clear()
                 itemDescription.text?.clear()
-//                    categoriesGroup.clearCheck()
-//                    hideKeyboard(itemInput)
             }
         }
-        
+
         titleInput.editText?.addTextChangedListener(object : TextWatcher {
             private val handler = Handler(Looper.getMainLooper())
             private val runnable = Runnable {
@@ -190,6 +167,7 @@ class ActiveListFragment : BaseFragment<ActiveListViewModel>(), CategoryAdapterE
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 handler.removeCallbacks(runnable)
             }
+
             override fun afterTextChanged(s: Editable?) {
                 if (!s.isNullOrEmpty()) {
                     handler.postDelayed(runnable, 1000)
@@ -198,7 +176,10 @@ class ActiveListFragment : BaseFragment<ActiveListViewModel>(), CategoryAdapterE
         })
 
         addFavoriteButton.setOnClickListener {
-            val direction = ActiveListFragmentDirections.actionActiveListDestinationToFavoriteProductsFragment(true)
+            val direction =
+                ActiveListFragmentDirections.actionActiveListDestinationToFavoriteProductsFragment(
+                    true
+                )
             viewModel.navigate(direction)
         }
 
@@ -240,6 +221,51 @@ class ActiveListFragment : BaseFragment<ActiveListViewModel>(), CategoryAdapterE
 
     fun saveCurrentState() {
         viewModel.saveCurrentStateToPrefs()
+    }
+
+    private fun setToolTip(status: ActiveListViewModel.ListStatus? = null) {
+        when (status) {
+            ActiveListViewModel.ListStatus.ACTIVE -> {
+                toolTipText.visibility = View.GONE
+                toolTipAnim.visibility = View.GONE
+                titleInput.visibility = View.VISIBLE
+            }
+            ActiveListViewModel.ListStatus.EMPTY -> {
+                toolTipAnim.apply {
+                    visibility = View.VISIBLE
+                    setAnimation(R.raw.empty)
+                    repeatCount = ValueAnimator.INFINITE
+                    playAnimation()
+                }
+                toolTipText.apply {
+                    fadeIn(500)
+                    setText(R.string.tooltip_active_list_empty)
+                }
+                titleInput.visibility = View.INVISIBLE
+                titleInput.editText?.text?.clear()
+            }
+            else -> {
+                toolTipAnim.apply {
+                    visibility = View.VISIBLE
+                    setAnimation(R.raw.done)
+                    repeatCount = 0
+                    playAnimation()
+                    addAnimatorListener(object : Animator.AnimatorListener {
+                        override fun onAnimationEnd(animation: Animator?) {
+                            toolTipText.apply {
+                                setText(R.string.tooltip_active_list_done)
+                            }
+                        }
+
+                        override fun onAnimationCancel(animation: Animator?) {}
+                        override fun onAnimationRepeat(animation: Animator?) {}
+                        override fun onAnimationStart(animation: Animator?) {}
+                    })
+                }
+                titleInput.visibility = View.INVISIBLE
+                titleInput.editText?.text?.clear()
+            }
+        }
     }
 
     private fun hideKeyboard(view: View) {
