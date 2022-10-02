@@ -1,7 +1,9 @@
 package com.chudofishe.grocerieslistapp.data.model
 
+import android.os.Parcelable
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import kotlinx.parcelize.Parcelize
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.descriptors.PrimitiveKind
@@ -13,6 +15,7 @@ import java.time.LocalDate
 
 @Entity
 @Serializable
+@Parcelize
 data class ShoppingList(
     @PrimaryKey(autoGenerate = true)
     var id: Long = 0L,
@@ -21,7 +24,19 @@ data class ShoppingList(
     var items: List<ShoppingItem> = emptyList(),
     @Serializable(with = LocalDateSerializer::class)
     var date: LocalDate = LocalDate.now(),
-)
+) : Parcelable {
+
+    fun resetDoneItems() {
+        this.items.forEach { item ->
+            if (item.currentCategory == Category.DONE) item.currentCategory = item.originalCategory
+        }
+    }
+
+    fun isCompleted(): Boolean {
+        this.items.forEach { if (it.currentCategory != Category.DONE) return false }
+        return true
+    }
+}
 
 object LocalDateSerializer : KSerializer<LocalDate> {
     override val descriptor: SerialDescriptor

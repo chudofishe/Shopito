@@ -22,6 +22,9 @@
         <item name="bottomSheetStyle">@style/BottomSheetDialog</item>
         <!-- Image Button -->
         <item name="android:imageButtonStyle">@style/ImageButtonStyle</item>
+        <!-- Font -->
+        <item name="fontFamily">@font/allerta</item>
+        <item name="android:fontFamily">@font/allerta</item>
         <!-- Choice chip -->
         <item name="chipStyle">@style/App.Chip.Choice.Style</item>
         <!-- Text Field widget style attribute -->

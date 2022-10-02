@@ -1,4 +1,4 @@
-package com.chudofishe.grocerieslistapp.ui.common
+package com.chudofishe.grocerieslistapp.ui.common.util
 
 import androidx.navigation.NavDirections
 

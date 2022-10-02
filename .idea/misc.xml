@@ -15,6 +15,7 @@
         <entry key="app/src/main/res/drawable/ic_baseline_edit_24.xml" value="0.2095" />
         <entry key="app/src/main/res/drawable/ic_baseline_favorite_24.xml" value="0.1" />
         <entry key="app/src/main/res/drawable/ic_baseline_favorite_border_24.xml" value="0.155" />
+        <entry key="app/src/main/res/drawable/ic_baseline_format_list_bulleted_24.xml" value="0.1135" />
         <entry key="app/src/main/res/drawable/ic_baseline_more_vert_24.xml" value="0.2065" />
         <entry key="app/src/main/res/drawable/ic_baseline_remove_24.xml" value="0.218" />
         <entry key="app/src/main/res/drawable/ic_baseline_settings_24.xml" value="0.155" />
@@ -22,19 +23,21 @@
         <entry key="app/src/main/res/drawable/ic_launcher_background.xml" value="0.155" />
         <entry key="app/src/main/res/drawable/selected_dot.xml" value="0.148" />
         <entry key="app/src/main/res/drawable/tab_dot_selector.xml" value="0.148" />
+        <entry key="app/src/main/res/font/antic.xml" value="0.3484375" />
         <entry key="app/src/main/res/layout/active_list_item.xml" value="0.22916666666666666" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.1570987646130548" />
         <entry key="app/src/main/res/layout/bottom_sheet.xml" value="0.335" />
         <entry key="app/src/main/res/layout/category_card.xml" value="0.42337164750957856" />
         <entry key="app/src/main/res/layout/favorite_shopping_item.xml" value="0.21331521739130435" />
-        <entry key="app/src/main/res/layout/fragment_active_list.xml" value="0.25" />
+        <entry key="app/src/main/res/layout/fragment_active_list.xml" value="0.335" />
         <entry key="app/src/main/res/layout/fragment_edit_list.xml" value="0.276657060518732" />
         <entry key="app/src/main/res/layout/fragment_favorite_products.xml" value="0.22192028985507245" />
         <entry key="app/src/main/res/layout/fragment_favorites.xml" value="0.22192028985507245" />
         <entry key="app/src/main/res/layout/fragment_history.xml" value="0.17980072463768115" />
-        <entry key="app/src/main/res/layout/fragment_history_list.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/fragment_history_list.xml" value="0.25" />
         <entry key="app/src/main/res/layout/fragment_onboarding.xml" value="0.21693840579710144" />
         <entry key="app/src/main/res/layout/fragment_onboarding_host.xml" value="0.21693840579710144" />
+        <entry key="app/src/main/res/layout/fragment_settings.xml" value="0.23505434782608695" />
         <entry key="app/src/main/res/layout/historized_list_item.xml" value="0.375" />
         <entry key="app/src/main/res/layout/history_card.xml" value="0.335" />
         <entry key="app/src/main/res/layout/history_card_item.xml" value="0.335" />
@@ -57,6 +60,7 @@
         <entry key="app/src/main/res/menu/history_list_toolbar_menu.xml" value="0.3171875" />
         <entry key="app/src/main/res/menu/navigation_menu.xml" value="0.3182291666666667" />
         <entry key="app/src/main/res/menu/shopping_item_favorite_menu.xml" value="0.25" />
+        <entry key="app/src/main/res/xml/settings_screen.xml" value="0.23505434782608695" />
       </map>
     </option>
   </component>

@@ -5,8 +5,11 @@ import android.util.Log
 import android.view.*
 import android.widget.ImageButton
 import android.widget.LinearLayout
+import android.widget.TextView
+import androidx.activity.addCallback
 import androidx.core.view.MenuHost
 import androidx.core.view.MenuProvider
+import androidx.core.view.updateMargins
 import androidx.core.widget.NestedScrollView
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
@@ -35,7 +38,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
-class FavoriteProductsFragment : BaseFragment<FavoriteProductsViewModel>() {
+class FavoriteProductsFragment : BaseFragment<FavoriteProductsViewModel>(), ItemsListAdapterActionsListener {
     private var _binding: FragmentFavoriteProductsBinding? = null
     private val binding: FragmentFavoriteProductsBinding
         get() = _binding!!
@@ -48,28 +51,24 @@ class FavoriteProductsFragment : BaseFragment<FavoriteProductsViewModel>() {
     private lateinit var itemDescription: TextInputEditText
     private lateinit var categoriesGroup: ChipGroup
     private lateinit var adapter: ItemsListAdapter
+    private lateinit var bottomSheet: LinearLayout
     private lateinit var bottomSheetBehavior: BottomSheetBehavior<LinearLayout>
+    private lateinit var tooltip: TextView
 
     private var editedItemId: Int? = null
 
-    private val itemsListAdapterActionsListener = object : ItemsListAdapterActionsListener {
-        override fun updateItem(item: ShoppingItem) {
-            editedItemId = item.id
-            itemName.setText(item.text)
-            itemDescription.setText(item.description)
-            if (item.originalCategory != Category.UNCATEGORIZED) {
-                categoriesGroup.check(item.originalCategory.ordinal)
-            }
-            bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
+    override fun onUpdateButtonClicked(item: ShoppingItem) {
+        editedItemId = item.id
+        itemName.setText(item.text)
+        itemDescription.setText(item.description)
+        if (item.originalCategory != Category.UNCATEGORIZED) {
+            categoriesGroup.check(item.originalCategory.ordinal)
         }
+        bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
+    }
 
-        override fun deleteItem(item: ShoppingItem) {
-            viewModel.delete(item)
-        }
-
-        override fun saveItem(item: ShoppingItem) {
-            viewModel.add(item)
-        }
+    override fun onRemoveButtonClicked(item: ShoppingItem) {
+        viewModel.delete(item)
     }
 
     override fun onCreateView(
@@ -82,16 +81,22 @@ class FavoriteProductsFragment : BaseFragment<FavoriteProductsViewModel>() {
             this@FavoriteProductsFragment.productsList = productsList
             submitButton = bottomSheet.submit
             itemName = bottomSheet.itemName
+            this@FavoriteProductsFragment.bottomSheet = bottomSheet.root
             itemDescription = bottomSheet.itemDescription
             categoriesGroup = bottomSheet.categoriesChipGroup
+            tooltip = tooltipText
 
             bottomSheet.addFavoriteButton.visibility = View.GONE
         }
 
-        bottomSheetBehavior = BottomSheetBehavior.from(binding.bottomSheet.root).apply {
-            peekHeight = resources.getDimension(R.dimen.input_group_peek_height).toInt()
-            state = BottomSheetBehavior.STATE_COLLAPSED
-            isHideable = false
+        if (viewModel.isSelectionMode) {
+            hideBottomSheet()
+        } else {
+            bottomSheetBehavior = BottomSheetBehavior.from(binding.bottomSheet.root).apply {
+                peekHeight = resources.getDimension(R.dimen.input_group_peek_height).toInt()
+                state = BottomSheetBehavior.STATE_COLLAPSED
+                isHideable = false
+            }
         }
 
         return binding.root
@@ -103,7 +108,13 @@ class FavoriteProductsFragment : BaseFragment<FavoriteProductsViewModel>() {
         lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.productsList.collect {
-                    adapter.submitList(it)
+                    adapter.setItemsList(it)
+                    if (it.isEmpty()) {
+                        tooltip.setText(R.string.tooltip_favorite_products_screen)
+                        tooltip.visibility = View.VISIBLE
+                    } else {
+                        tooltip.visibility = View.GONE
+                    }
                 }
             }
         }
@@ -119,7 +130,7 @@ class FavoriteProductsFragment : BaseFragment<FavoriteProductsViewModel>() {
                     when(menuItem.itemId) {
                         R.id.action_confirm -> {
                             val direction =
-                                FavoriteProductsFragmentDirections.actionFavoriteProductsFragmentToCurrentListDestination(selectedFavItems = adapter.checkedItems.toTypedArray())
+                                FavoriteProductsFragmentDirections.actionFavoriteProductsFragmentToActiveListDestination(selectedFavItems = adapter.checkedItems.toTypedArray())
                             viewModel.navigate(direction)
                         }
                         else -> viewModel.navigateBack()
@@ -130,9 +141,9 @@ class FavoriteProductsFragment : BaseFragment<FavoriteProductsViewModel>() {
         }
 
         adapter = if (viewModel.isSelectionMode) {
-            ItemsListAdapter(ItemsListAdapterItemType.FAVORITE_SELECTION, itemsListAdapterActionsListener)
+            ItemsListAdapter(ItemsListAdapterItemType.FAVORITE_SELECTION, this)
         } else {
-            ItemsListAdapter(ItemsListAdapterItemType.FAVORITE_EDIT, itemsListAdapterActionsListener)
+            ItemsListAdapter(ItemsListAdapterItemType.FAVORITE_EDIT, this)
         }
 
         productsList.adapter = adapter
@@ -170,8 +181,25 @@ class FavoriteProductsFragment : BaseFragment<FavoriteProductsViewModel>() {
         categoriesGroup.init()
         productsList.addItemDecoration(
             MarginItemDecoration(resources.getDimension(R.dimen.shopping_item_spacing).toInt())
-//            DividerItemDecoration(context, LinearLayoutManager.VERTICAL)
         )
+    }
+
+    override fun onStart() {
+        super.onStart()
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
+            if (bottomSheetBehavior.state == BottomSheetBehavior.STATE_EXPANDED) {
+                bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
+            } else {
+                this.remove()
+                requireActivity().onBackPressed()
+            }
+        }
+    }
+
+    private fun hideBottomSheet() {
+        bottomSheet.visibility = View.GONE
+        val rvParams = productsList.layoutParams as ViewGroup.MarginLayoutParams
+        rvParams.updateMargins(bottom = 0)
     }
 
     override fun onDestroyView() {

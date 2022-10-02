@@ -1,9 +1,11 @@
 package com.chudofishe.grocerieslistapp.ui.common.util
 
 import android.animation.Animator
+import android.animation.AnimatorListenerAdapter
 import android.content.Context
 import android.text.Editable
 import android.util.TypedValue
+import android.view.View
 import androidx.core.content.ContextCompat
 import com.chudofishe.grocerieslistapp.R
 import com.chudofishe.grocerieslistapp.data.model.Category
@@ -57,4 +59,44 @@ fun ChipGroup.init() {
             }
             this.addView(chip)
         }
+}
+
+fun View.fadeIn(animDuration: Int) {
+    this.clearAnimation()
+    this.apply {
+        // Set the content view to 0% opacity but visible, so that it is visible
+        // (but fully transparent) during the animation.
+        alpha = 0f
+        visibility = View.VISIBLE
+
+        // Animate the content view to 100% opacity, and clear any animation
+        // listener set on the view.
+        animate()
+            .alpha(1f)
+            .setDuration(animDuration.toLong())
+            .setListener(object : AnimatorListenerAdapter() {
+                override fun onAnimationCancel(animation: Animator?) {
+                    super.onAnimationCancel(animation)
+                    this@fadeIn.visibility = View.INVISIBLE
+                }
+            })
+    }
+}
+
+fun View.fadeOut(animDuration: Int) {
+    this.clearAnimation()
+    this.apply {
+
+        // Set the content view to 0% opacity but visible, so that it is visible
+        // (but fully transparent) during the animation.
+
+        animate()
+            .alpha(0f)
+            .setDuration(animDuration.toLong()).setListener(object : AnimatorListenerAdapter() {
+                override fun onAnimationEnd(animation : Animator?) {
+                    super.onAnimationEnd(animation)
+                    this@fadeOut.visibility = View.GONE
+                }
+            })
+    }
 }

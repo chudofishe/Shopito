@@ -1,7 +1,7 @@
 package com.chudofishe.grocerieslistapp.ui.common
 
+import android.annotation.SuppressLint
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
@@ -12,85 +12,58 @@ import com.chudofishe.grocerieslistapp.data.model.ShoppingItem
 import com.chudofishe.grocerieslistapp.databinding.ShoppingItemFavoriteBinding
 
 class ItemsListAdapter(private val itemsType: ItemsListAdapterItemType,
-                       val listener: ItemsListAdapterActionsListener? = null
-) : ListAdapter<ShoppingItem, ItemsListViewHolder>(ShoppingItemDiffCallback()) {
+                       private val listener: ItemsListAdapterActionsListener)
+    : RecyclerView.Adapter<ItemsListViewHolder>() {
 
     var updateCategoryItemCount: (Int) -> Unit = {}
     val checkedItems = mutableListOf<ShoppingItem>()
     val items = mutableListOf<ShoppingItem>()
-    var listCategory: Category? = null
 
-    class ShoppingItemDiffCallback : DiffUtil.ItemCallback<ShoppingItem>() {
-        override fun areItemsTheSame(oldItem: ShoppingItem, newItem: ShoppingItem): Boolean {
-            return oldItem.text == newItem.text &&
-                    oldItem.originalCategory == newItem.originalCategory
-        }
-
-        override fun areContentsTheSame(oldItem: ShoppingItem, newItem: ShoppingItem): Boolean {
-            return areItemsTheSame(oldItem, newItem) &&
-                    oldItem.currentCategory == newItem.currentCategory &&
-                    oldItem.description == newItem.description
-        }
-
-    }
-
-    fun remove(pos: Int) {
-        val list = currentList.toMutableList()
-        list.removeAt(pos)
-        items.removeAt(pos)
-        submitList(list)
-    }
-
-    fun add(newItem: ShoppingItem) {
-        if (itemsType == ItemsListAdapterItemType.ACTIVE) {
-            listCategory = newItem.currentCategory
-        }
-        val list = currentList.toMutableList()
-        list.add(newItem)
-        items.add(newItem)
-        submitList(list)
-    }
-
-    fun addList(list: List<ShoppingItem>) {
-        val newList = currentList.toMutableList()
-        newList.addAll(list)
-        items.addAll(list)
-        submitList(newList)
-    }
-
-    override fun onCurrentListChanged(
-        previousList: MutableList<ShoppingItem>,
-        currentList: MutableList<ShoppingItem>
-    ) {
-        if (currentList.isEmpty() && previousList.isNotEmpty()) {
-            listCategory?.let {
-                listener?.removeCategory(it)
+    @SuppressLint("NotifyDataSetChanged")
+    fun setItemsList(list: List<ShoppingItem>) {
+        if (items.isEmpty()) {
+            items.addAll(list)
+            notifyDataSetChanged()
+        } else if (list.isEmpty()) {
+            items.clear()
+            notifyDataSetChanged()
+        } else if (list.size < items.size) {
+            val iterator = items.iterator()
+            while(iterator.hasNext()) {
+                val item = iterator.next()
+                if (!list.contains(item)) {
+                    notifyItemRemoved(items.indexOf(item))
+                    iterator.remove()
+                }
             }
         } else {
-            updateCategoryItemCount(currentList.size)
+            val diff = list.filterNot { items.contains(it) }
+            items.addAll(diff)
+            notifyItemRangeInserted(items.size - diff.size, diff.size)
         }
+        updateCategoryItemCount(items.size)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemsListViewHolder {
         val inflater = LayoutInflater.from(parent.context)
         return when (itemsType) {
             ItemsListAdapterItemType.ACTIVE -> {
-                ActiveListItemViewHolder(ShoppingItemBinding.inflate(inflater, parent, false), this)
+                ActiveListItemViewHolder(ShoppingItemBinding.inflate(inflater, parent, false), listener)
             }
             ItemsListAdapterItemType.HISTORIZED -> {
-                HistoryListItemViewHolder(ShoppingItemBinding.inflate(inflater, parent, false), this)
+                HistoryListItemViewHolder(ShoppingItemBinding.inflate(inflater, parent, false), listener)
             }
             ItemsListAdapterItemType.FAVORITE_EDIT -> {
-                FavoriteEditableListItemViewHolder(ShoppingItemFavoriteBinding.inflate(inflater, parent, false), this)
+                FavoriteEditableListItemViewHolder(ShoppingItemFavoriteBinding.inflate(inflater, parent, false), listener)
             }
             ItemsListAdapterItemType.FAVORITE_SELECTION -> {
-                FavoriteSelectionListItemViewHolder(ShoppingItemFavoriteBinding.inflate(inflater, parent, false), this)
+                FavoriteSelectionListItemViewHolder(ShoppingItemFavoriteBinding.inflate(inflater, parent, false), checkedItems, listener)
             }
         }
     }
 
     override fun onBindViewHolder(holder: ItemsListViewHolder, position: Int) {
-        val item = getItem(position)
+        val item = items[position]
         when (itemsType) {
             ItemsListAdapterItemType.ACTIVE -> {
                 (holder as ActiveListItemViewHolder).bind(item)
@@ -106,12 +79,8 @@ class ItemsListAdapter(private val itemsType: ItemsListAdapterItemType,
             }
         }
     }
-}
 
-interface ItemsListAdapterActionsListener {
-    fun onItemClicked(item: ShoppingItem) {}
-    fun removeCategory(category: Category?) {}
-    fun updateItem(item: ShoppingItem) {}
-    fun deleteItem(item: ShoppingItem) {}
-    fun saveItem(item: ShoppingItem) {}
+    override fun getItemCount(): Int {
+        return items.size
+    }
 }

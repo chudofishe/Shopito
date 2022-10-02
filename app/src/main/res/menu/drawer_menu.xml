@@ -5,7 +5,7 @@
         android:checkableBehavior="single">
 
         <item
-            android:id="@+id/current_list_destination"
+            android:id="@+id/active_list_destination"
             android:icon="@drawable/ic_baseline_format_list_numbered_24"
             android:title="@string/active" />
 
@@ -28,10 +28,5 @@
             android:id="@+id/settings_destination"
             android:icon="@drawable/ic_baseline_settings_24"
             android:title="@string/settings"/>
-
-        <item
-            android:id="@+id/help_destination"
-            android:icon="@drawable/ic_baseline_help_outline_24"
-            android:title="@string/help"/>
     </group>
 </menu>

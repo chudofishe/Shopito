@@ -24,14 +24,14 @@
         android:paddingTop="42dp"
         android:paddingStart="12dp"
         android:paddingEnd="12dp"
-        android:text="@string/tooltip_start_text" />
+        android:text="@string/tooltip_active_list_empty" />
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/onBoarding_subtitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="24dp"
-        android:text="@string/tooltip_start_text"
+        android:text="@string/tooltip_active_list_empty"
         android:textAppearance="?attr/textAppearanceBody1"
         android:gravity="center"
         />

@@ -5,11 +5,10 @@ import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavDirections
 import com.chudofishe.grocerieslistapp.data.dao.ShoppingItemDao
 import com.chudofishe.grocerieslistapp.data.model.ShoppingItem
-import dagger.hilt.android.lifecycle.HiltViewModel
+import com.chudofishe.grocerieslistapp.ui.common.util.NavigationCommand
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 
 abstract class BaseViewModel (

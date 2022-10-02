@@ -52,12 +52,12 @@ class HistoryListAdapter(private val listener: HistoryListAdapterActionsListener
 
         override val toggleCollapse = View.OnClickListener {
             if (collapsed) {
-                adapter.submitList(item.items)
+                adapter.setItemsList(item.items)
                 binding.collapseButton.apply {
                     text = context.getString(R.string.hide)
                 }
             } else {
-                adapter.submitList(item.items.subList(0, COLLAPSED_ITEM_COUNT))
+                adapter.setItemsList(item.items.subList(0, COLLAPSED_ITEM_COUNT))
                 binding.collapseButton.apply {
                     text = context.getString(R.string.n_more_items,
                         item.items.size - COLLAPSED_ITEM_COUNT
@@ -74,11 +74,11 @@ class HistoryListAdapter(private val listener: HistoryListAdapterActionsListener
                     when (menuItem.itemId) {
                         R.id.historized_menu_delete -> {
                             showConfirmAlertDialog(R.string.question_delete) { _, _ ->
-                                listener.remove(item)
+                                listener.onRemoveButtonClicked(item)
                             }
                         }
                         R.id.historized_menu_set_active -> {
-                            listener.navigate(item.id)
+                            listener.onSetActiveButtonClicked(item)
                         }
                     }
                     true
@@ -88,7 +88,9 @@ class HistoryListAdapter(private val listener: HistoryListAdapterActionsListener
 
         private val favoriteIBOnClickListener = View.OnClickListener {
             item.isFavorite = !item.isFavorite
-            listener.update(item)
+
+            listener.onFavoriteButtonClicked(item)
+
             if (isFavoritesListAdapter) {
                 val newList = mutableListOf<ShoppingList>().apply {
                     addAll(currentList)
@@ -118,7 +120,7 @@ class HistoryListAdapter(private val listener: HistoryListAdapterActionsListener
                     listener.onSubListItemClicked(item)
                 }
             })
-            adapter.submitList(displayedItems)
+            adapter.setItemsList(displayedItems)
 
             binding.apply {
                 itemsList.adapter = adapter
@@ -132,10 +134,13 @@ class HistoryListAdapter(private val listener: HistoryListAdapterActionsListener
                 } else {
                     collapseButton.visibility = View.GONE
                 }
-                item.title?.let {
+                if (item.title != null) {
                     title.visibility = View.VISIBLE
-                    title.text = it
+                    title.text = item.title
+                } else {
+                    title.visibility = View.GONE
                 }
+
                 optionsIb.setOnClickListener(showPopUpMenu)
                 favoriteIb.setImageResource(if (item.isFavorite) {
                     R.drawable.ic_baseline_favorite_24
@@ -147,11 +152,4 @@ class HistoryListAdapter(private val listener: HistoryListAdapterActionsListener
             }
         }
     }
-}
-
-interface HistoryListAdapterActionsListener {
-    fun remove(list: ShoppingList) {}
-    fun update(item: ShoppingList) {}
-    fun onSubListItemClicked(item: ShoppingItem) {}
-    fun navigate(itemId: Long)
 }

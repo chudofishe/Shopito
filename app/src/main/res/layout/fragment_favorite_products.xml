@@ -22,4 +22,11 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
 
+    <TextView
+        android:id="@+id/tooltip_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="@string/tooltip_favorite_products_screen" />
+
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

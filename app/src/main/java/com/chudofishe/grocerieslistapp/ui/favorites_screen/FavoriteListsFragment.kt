@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -21,7 +22,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
-class FavoriteListsFragment : BaseFragment<FavoriteListsViewModel>() {
+class FavoriteListsFragment : BaseFragment<FavoriteListsViewModel>(), HistoryListAdapterActionsListener {
 
     private var _binding: FragmentHistoryListBinding? = null
     private val binding: FragmentHistoryListBinding
@@ -29,6 +30,7 @@ class FavoriteListsFragment : BaseFragment<FavoriteListsViewModel>() {
 
     private lateinit var favoritesList: RecyclerView
     private lateinit var adapter: HistoryListAdapter
+    private lateinit var tooltip: TextView
 
     override val viewModel: FavoriteListsViewModel by viewModels()
 
@@ -39,6 +41,7 @@ class FavoriteListsFragment : BaseFragment<FavoriteListsViewModel>() {
         _binding = FragmentHistoryListBinding.inflate(inflater, container, false)
 
         favoritesList = binding.historyList
+        tooltip = binding.tooltipText
 
         return binding.root
     }
@@ -50,29 +53,35 @@ class FavoriteListsFragment : BaseFragment<FavoriteListsViewModel>() {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.favoritesList.collect {
                     adapter.submitList(it)
+                    if (it.isEmpty()) {
+                        tooltip.setText(R.string.tooltip_favorite_list_screen)
+                        tooltip.visibility = View.VISIBLE
+                    } else {
+                        tooltip.visibility = View.GONE
+                    }
                 }
             }
         }
 
-        adapter = HistoryListAdapter(object : HistoryListAdapterActionsListener {
-            override fun update(item: ShoppingList) {
-                viewModel.update(item)
-            }
-
-            override fun onSubListItemClicked(item: ShoppingItem) {
-                viewModel.addShoppingItemToFavorites(item)
-            }
-
-            override fun navigate(itemId: Long) {
-                val directions = FavoriteListsFragmentDirections.actionFavoriteListsDestinationToCurrentListDestination(itemId)
-                viewModel.navigate(directions)
-            }
-        }, isFavoritesListAdapter = true)
+        adapter = HistoryListAdapter(this, isFavoritesListAdapter = true)
 
         favoritesList.adapter = adapter
         favoritesList.addItemDecoration(
             MarginItemDecoration(resources.getDimension(R.dimen.card_spacing).toInt())
         )
+    }
+
+    override fun onFavoriteButtonClicked(item: ShoppingList) {
+        viewModel.update(item)
+    }
+
+    override fun onSubListItemClicked(item: ShoppingItem) {
+        viewModel.addShoppingItemToFavorites(item)
+    }
+
+    override fun onSetActiveButtonClicked(list: ShoppingList) {
+        val directions = FavoritesFragmentDirections.actionFavoritesDestinationToActiveListDestination(list)
+        viewModel.navigate(directions)
     }
 
     override fun onDestroyView() {
