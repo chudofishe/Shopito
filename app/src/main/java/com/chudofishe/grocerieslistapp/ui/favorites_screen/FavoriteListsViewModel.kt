@@ -36,6 +36,12 @@ class FavoriteListsViewModel @Inject constructor(
         }
     }
 
+    fun delete(list: ShoppingList) {
+        viewModelScope.launch {
+            shoppingListDao.delete(list)
+        }
+    }
+
     override fun onCleared() {
         super.onCleared()
         Log.d(this.javaClass.name, "onCleared")

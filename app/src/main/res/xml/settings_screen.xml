@@ -23,5 +23,14 @@
             android:key="@string/settings_storage_auto_delete"
             android:summary="@string/settings_storage_auto_delete_desc"
             android:title="@string/settings_storage_auto_delete" />
+
+        <Preference
+            app:key="@string/settings_storage_delete_all_lists"
+            app:title="@string/settings_storage_delete_all_lists" />
+
+        <Preference
+            app:key="@string/settings_storage_delete_all_favorite_products"
+            app:title="@string/settings_storage_delete_all_favorite_products" />
+
     </PreferenceCategory>
 </PreferenceScreen>

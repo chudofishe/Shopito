@@ -11,7 +11,7 @@
         android:label="@string/active_list_title"
         tools:layout="@layout/fragment_active_list" >
         <argument
-            android:name="list"
+            android:name="historyList"
             app:argType="com.chudofishe.grocerieslistapp.data.model.ShoppingList"
             android:defaultValue="@null"
             app:nullable="true" />
@@ -32,7 +32,7 @@
     <fragment
         android:id="@+id/history_list_destination"
         android:name="com.chudofishe.grocerieslistapp.ui.history_screen.HistoryFragment"
-        android:label="HistoryFragment"
+        android:label="@string/history"
         tools:layout="@layout/fragment_history_list">
         <action
             android:id="@+id/action_history_list_destination_to_active_list_destination"
@@ -44,7 +44,7 @@
     <fragment
         android:id="@+id/favorites_destination"
         android:name="com.chudofishe.grocerieslistapp.ui.favorites_screen.FavoritesFragment"
-        android:label="FavoritesListFragment"
+        android:label="@string/favorites"
         tools:layout="@layout/fragment_favorites">
         <action
             android:id="@+id/action_favorites_destination_to_active_list_destination"
@@ -60,7 +60,7 @@
     <fragment
         android:id="@+id/favoriteProductsFragment"
         android:name="com.chudofishe.grocerieslistapp.ui.favorites_screen.FavoriteProductsFragment"
-        android:label="FavoriteProductsFragment"
+        android:label="@string/favorite_products"
         tools:layout="@layout/fragment_favorite_products">
         <action
             android:id="@+id/action_favoriteProductsFragment_to_active_list_destination"
@@ -69,8 +69,8 @@
             app:popUpToInclusive="true" />
         <argument
             android:name="selectionMode"
-            app:argType="boolean"
-            android:defaultValue="false" />
+            android:defaultValue="false"
+            app:argType="boolean" />
     </fragment>
     <fragment
         android:id="@+id/onBoardingHostFragment"
@@ -86,5 +86,5 @@
     <fragment
         android:id="@+id/settings_destination"
         android:name="com.chudofishe.grocerieslistapp.ui.settings_screen.SettingsFragment"
-        android:label="SettingsFragment" />
+        android:label="@string/settings" />
 </navigation>

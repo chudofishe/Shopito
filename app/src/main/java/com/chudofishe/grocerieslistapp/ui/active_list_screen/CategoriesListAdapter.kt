@@ -1,6 +1,5 @@
 package com.chudofishe.grocerieslistapp.ui.active_list_screen
 
-import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -74,7 +73,7 @@ class CategoriesListAdapter(private val onEventListener: CategoryAdapterEventLis
 
     private fun addCategory(newItem: Category) {
         when (newItem) {
-            Category.UNCATEGORIZED -> {
+            Category.OTHER -> {
                 categories.add(0, newItem)
                 notifyItemInserted(0)
             }
@@ -86,7 +85,7 @@ class CategoriesListAdapter(private val onEventListener: CategoryAdapterEventLis
                 if (categories.isEmpty()) {
                     categories.add(newItem)
                     notifyItemInserted(categories.size - 1)
-                } else if (!categories.contains(Category.UNCATEGORIZED)) {
+                } else if (!categories.contains(Category.OTHER)) {
                     categories.add(0, newItem)
                     notifyItemInserted(0)
                 } else {

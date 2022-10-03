@@ -25,6 +25,9 @@ interface ShoppingListDao {
     @Query("DELETE FROM shoppinglist")
     suspend fun deleteAll()
 
+    @Query("DELETE FROM shoppinglist WHERE isFavorite = :isFavorite")
+    suspend fun deleteNonFavorites(isFavorite: Boolean = false)
+
     @Query("DELETE FROM SHOPPINGLIST WHERE isFavorite = :isFavorite AND date <= :epochDay")
     suspend fun deleteOldLists(isFavorite: Boolean = false, epochDay: Long)
 

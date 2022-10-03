@@ -10,6 +10,9 @@ interface ShoppingItemDao {
     @Query("SELECT * FROM shoppingitem ORDER BY id DESC")
     fun getAll(): Flow<List<ShoppingItem>>
 
+    @Query("DELETE FROM shoppingitem")
+    suspend fun deleteAll()
+
     @Delete
     suspend fun delete(item: ShoppingItem)
 

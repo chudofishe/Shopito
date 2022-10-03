@@ -18,6 +18,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:text="@string/tooltip_favorite_products_screen" />
+        android:visibility="gone"
+        android:text="@string/tooltip_favorite_products_screen"
+        tools:visibility="visible"/>
 
 </FrameLayout>

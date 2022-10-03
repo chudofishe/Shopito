@@ -19,7 +19,7 @@
     <string name="category_fruits_and_vegatables">Fruits &amp; Vegetables</string>
     <string name="category_meat">Meat &amp; Fish</string>
     <string name="category_snacks">Snacks</string>
-    <string name="category_uncategorized">Uncategorized</string>
+    <string name="category_other">Other</string>
     <string name="category_done">Done</string>
     <!-- Popup menu actions -->
     <string name="delete_all">Delete all</string>
@@ -41,7 +41,7 @@
     <string name="title_tooltip">Title</string>
     <string name="tooltip_favorite_products_screen">Your favorite products will be here</string>
     <string name="tooltip_favorite_list_screen">Your favorite grocery lists will be here</string>
-    <string name="tooltip_history_list_screen">Your past grocery lists will be here</string>
+    <string name="tooltip_history_list_screen">Your finished lists will be here</string>
 
     <string name="n_items">%1d items</string>
 
@@ -49,8 +49,8 @@
     <string name="active">Active list</string>
     <string name="history">History</string>
     <string name="favorites">Favorites</string>
+    <string name="favorite_products">Favorite products</string>
     <string name="settings">Settings</string>
-    <string name="help">Help</string>
 
     <string name="tab_lists">Lists</string>
     <string name="tab_products">Products</string>
@@ -92,8 +92,12 @@
         <item>Light</item>
         <item>Dark</item>
     </string-array>
-    <string name="settings_storage_auto_delete">Delete old records</string>
-    <string name="settings_storage_auto_delete_dialog">Delete records older then:</string>
+    <string name="settings_storage_delete_all_lists_dialog">Also delete favorite lists?</string>
+    <string name="settings_storage_delete_all_lists">Clear list history</string>
+    <string name="settings_storage_delete_all_favorite_products_dialog">Are you sure you want to delete all favorite products?</string>
+    <string name="settings_storage_delete_all_favorite_products">Clear favorite products</string>
+    <string name="settings_storage_auto_delete">Clean up old records</string>
+    <string name="settings_storage_auto_delete_dialog">Automatically remove records older then:</string>
     <string name="settings_storage_auto_delete_desc">
         Automatically delete not lists older than certain amount of days (favorite lists are not affected)
     </string>

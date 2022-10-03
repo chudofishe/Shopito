@@ -18,6 +18,7 @@ import com.chudofishe.grocerieslistapp.ui.common.BaseFragment
 import com.chudofishe.grocerieslistapp.ui.history_screen.HistoryListAdapter
 import com.chudofishe.grocerieslistapp.ui.history_screen.HistoryListAdapterActionsListener
 import com.chudofishe.grocerieslistapp.ui.common.util.MarginItemDecoration
+import com.chudofishe.grocerieslistapp.ui.common.util.fadeIn
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -55,7 +56,7 @@ class FavoriteListsFragment : BaseFragment<FavoriteListsViewModel>(), HistoryLis
                     adapter.submitList(it)
                     if (it.isEmpty()) {
                         tooltip.setText(R.string.tooltip_favorite_list_screen)
-                        tooltip.visibility = View.VISIBLE
+                        tooltip.fadeIn(500)
                     } else {
                         tooltip.visibility = View.GONE
                     }
@@ -75,13 +76,17 @@ class FavoriteListsFragment : BaseFragment<FavoriteListsViewModel>(), HistoryLis
         viewModel.update(item)
     }
 
-    override fun onSubListItemClicked(item: ShoppingItem) {
+    override fun onSubListItemLongClicked(item: ShoppingItem) {
         viewModel.addShoppingItemToFavorites(item)
     }
 
     override fun onSetActiveButtonClicked(list: ShoppingList) {
         val directions = FavoritesFragmentDirections.actionFavoritesDestinationToActiveListDestination(list)
         viewModel.navigate(directions)
+    }
+
+    override fun onRemoveButtonClicked(list: ShoppingList) {
+        viewModel.delete(list)
     }
 
     override fun onDestroyView() {

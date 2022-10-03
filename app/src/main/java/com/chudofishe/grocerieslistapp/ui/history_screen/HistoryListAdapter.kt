@@ -18,7 +18,7 @@ import com.chudofishe.grocerieslistapp.ui.common.util.formatDateToDays
 
 class HistoryListAdapter(private val listener: HistoryListAdapterActionsListener,
                          private val isFavoritesListAdapter: Boolean = false)
-    : ListAdapter<ShoppingList, HistoryListAdapter.ViewHolder>(ShoppingListDiffCallback()) {
+    : ListAdapter<ShoppingList, HistoryListAdapter.ViewHolder>(ShoppingListDiffCallback()), ItemsListAdapterActionsListener {
 
     companion object {
         private const val COLLAPSED_ITEM_COUNT = 3
@@ -43,6 +43,10 @@ class HistoryListAdapter(private val listener: HistoryListAdapterActionsListener
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val shoppingList = getItem(position)
         holder.bind(shoppingList)
+    }
+
+    override fun onItemLongClicked(item: ShoppingItem) {
+        listener.onSubListItemLongClicked(item)
     }
 
     inner class ViewHolder(private val binding: HistoryCardBinding) : BaseCardViewHolder(binding.root) {
@@ -115,11 +119,7 @@ class HistoryListAdapter(private val listener: HistoryListAdapterActionsListener
                 item.items
             }.toMutableList()
 
-            adapter = ItemsListAdapter(ItemsListAdapterItemType.HISTORIZED, object : ItemsListAdapterActionsListener {
-                override fun onItemClicked(item: ShoppingItem) {
-                    listener.onSubListItemClicked(item)
-                }
-            })
+            adapter = ItemsListAdapter(ItemsListAdapterItemType.HISTORIZED, this@HistoryListAdapter)
             adapter.setItemsList(displayedItems)
 
             binding.apply {

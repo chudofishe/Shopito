@@ -18,6 +18,9 @@
         <item name="materialCardViewStyle">@style/AppCard</item>
         <!-- Bottom sheet style attribute -->
         <item name="bottomSheetStyle">@style/BottomSheetDialogNight</item>
+        <!-- Font -->
+        <item name="fontFamily">@font/allerta</item>
+        <item name="android:fontFamily">@font/allerta</item>
         <!-- Choice chip -->
         <item name="chipStyle">@style/App.Chip.Choice.Style</item>
         <!-- Text Field widget style attribute -->

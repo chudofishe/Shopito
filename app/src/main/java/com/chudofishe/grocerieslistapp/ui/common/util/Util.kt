@@ -49,7 +49,7 @@ fun Editable?.toStringOrNull(): String? {
 }
 
 fun ChipGroup.init() {
-    Category.values().filterNot { it == Category.DONE || it == Category.UNCATEGORIZED }
+    Category.values().filterNot { it == Category.DONE || it == Category.OTHER }
         .forEach { category ->
             val chip = Chip(this.context).apply {
                 id = category.ordinal

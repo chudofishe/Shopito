@@ -17,6 +17,7 @@ import com.chudofishe.grocerieslistapp.data.model.ShoppingList
 import com.chudofishe.grocerieslistapp.databinding.FragmentHistoryListBinding
 import com.chudofishe.grocerieslistapp.ui.common.BaseFragment
 import com.chudofishe.grocerieslistapp.ui.common.util.MarginItemDecoration
+import com.chudofishe.grocerieslistapp.ui.common.util.fadeIn
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -50,40 +51,18 @@ class HistoryFragment : BaseFragment<HistoryViewModel>(), HistoryListAdapterActi
         super.onViewCreated(view, savedInstanceState)
 
         lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.RESUMED) {
                 viewModel.historyList.collect {
                     adapter.submitList(it)
                     if (it.isEmpty()) {
                         tooltip.setText(R.string.tooltip_history_list_screen)
+                        tooltip.fadeIn(500)
                     } else {
                         tooltip.visibility = View.GONE
                     }
                 }
             }
         }
-
-        val menuHost: MenuHost = requireActivity()
-        menuHost.addMenuProvider(object : MenuProvider {
-            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
-                menuInflater.inflate(R.menu.history_list_toolbar_menu, menu)
-            }
-
-            override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
-                when(menuItem.itemId) {
-                    R.id.action_delete_all -> {
-                        AlertDialog.Builder(context)
-                            .setMessage(R.string.question_delete_all)
-                            .setPositiveButton(R.string.yes) { _, _ ->
-                                viewModel.deleteAll()
-                            }
-                            .setNegativeButton(R.string.no, null)
-                            .create().show()
-                    }
-                    else -> viewModel.navigateBack()
-                }
-                return true
-            }
-        }, viewLifecycleOwner, Lifecycle.State.RESUMED)
 
         adapter = HistoryListAdapter(this)
         historyList.adapter = adapter
@@ -100,7 +79,7 @@ class HistoryFragment : BaseFragment<HistoryViewModel>(), HistoryListAdapterActi
         viewModel.update(item)
     }
 
-    override fun onSubListItemClicked(item: ShoppingItem) {
+    override fun onSubListItemLongClicked(item: ShoppingItem) {
         viewModel.addShoppingItemToFavorites(item)
     }
 

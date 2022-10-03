@@ -42,7 +42,6 @@ class ActiveListFragment : BaseFragment<ActiveListViewModel>(), CategoryAdapterE
         get() = _binding!!
 
     override val viewModel: ActiveListViewModel by viewModels()
-
     private lateinit var submitButton: ImageButton
     private lateinit var addFavoriteButton: MaterialButton
     private lateinit var itemName: TextInputEditText
@@ -140,7 +139,7 @@ class ActiveListFragment : BaseFragment<ActiveListViewModel>(), CategoryAdapterE
         submitButton.setOnClickListener {
             if (!itemName.text.isNullOrEmpty()) {
                 val category = if (categoriesGroup.checkedChipId == View.NO_ID) {
-                    Category.UNCATEGORIZED
+                    Category.OTHER
                 } else {
                     Category.values()[categoriesGroup.checkedChipId]
                 }
@@ -245,6 +244,7 @@ class ActiveListFragment : BaseFragment<ActiveListViewModel>(), CategoryAdapterE
                 titleInput.editText?.text?.clear()
             }
             else -> {
+                toolTipText.visibility = View.INVISIBLE
                 toolTipAnim.apply {
                     visibility = View.VISIBLE
                     setAnimation(R.raw.done)
@@ -272,5 +272,10 @@ class ActiveListFragment : BaseFragment<ActiveListViewModel>(), CategoryAdapterE
         view.clearFocus()
         val imm = view.context?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         imm.hideSoftInputFromWindow(view.windowToken, 0)
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }

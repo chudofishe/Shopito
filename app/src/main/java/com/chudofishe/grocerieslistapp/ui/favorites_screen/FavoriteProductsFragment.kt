@@ -1,7 +1,6 @@
 package com.chudofishe.grocerieslistapp.ui.favorites_screen
 
 import android.os.Bundle
-import android.util.Log
 import android.view.*
 import android.widget.ImageButton
 import android.widget.LinearLayout
@@ -10,29 +9,25 @@ import androidx.activity.addCallback
 import androidx.core.view.MenuHost
 import androidx.core.view.MenuProvider
 import androidx.core.view.updateMargins
-import androidx.core.widget.NestedScrollView
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import androidx.recyclerview.widget.DividerItemDecoration
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.chudofishe.grocerieslistapp.R
 import com.chudofishe.grocerieslistapp.data.model.Category
 import com.chudofishe.grocerieslistapp.data.model.ShoppingItem
 import com.chudofishe.grocerieslistapp.databinding.FragmentFavoriteProductsBinding
-import com.chudofishe.grocerieslistapp.databinding.FragmentHistoryListBinding
 import com.chudofishe.grocerieslistapp.ui.common.BaseFragment
 import com.chudofishe.grocerieslistapp.ui.common.ItemsListAdapter
 import com.chudofishe.grocerieslistapp.ui.common.ItemsListAdapterActionsListener
 import com.chudofishe.grocerieslistapp.ui.common.ItemsListAdapterItemType
 import com.chudofishe.grocerieslistapp.ui.common.util.MarginItemDecoration
+import com.chudofishe.grocerieslistapp.ui.common.util.fadeIn
 import com.chudofishe.grocerieslistapp.ui.common.util.init
 import com.chudofishe.grocerieslistapp.ui.common.util.toStringOrNull
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.chip.ChipGroup
-import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.textfield.TextInputEditText
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -61,7 +56,7 @@ class FavoriteProductsFragment : BaseFragment<FavoriteProductsViewModel>(), Item
         editedItemId = item.id
         itemName.setText(item.text)
         itemDescription.setText(item.description)
-        if (item.originalCategory != Category.UNCATEGORIZED) {
+        if (item.originalCategory != Category.OTHER) {
             categoriesGroup.check(item.originalCategory.ordinal)
         }
         bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
@@ -111,7 +106,7 @@ class FavoriteProductsFragment : BaseFragment<FavoriteProductsViewModel>(), Item
                     adapter.setItemsList(it)
                     if (it.isEmpty()) {
                         tooltip.setText(R.string.tooltip_favorite_products_screen)
-                        tooltip.visibility = View.VISIBLE
+                        tooltip.fadeIn(500)
                     } else {
                         tooltip.visibility = View.GONE
                     }
@@ -151,7 +146,7 @@ class FavoriteProductsFragment : BaseFragment<FavoriteProductsViewModel>(), Item
         submitButton.setOnClickListener {
             if (!itemName.text.isNullOrEmpty()) {
                 val category = if (categoriesGroup.checkedChipId == View.NO_ID) {
-                    Category.UNCATEGORIZED
+                    Category.OTHER
                 } else {
                     Category.values()[categoriesGroup.checkedChipId]
                 }

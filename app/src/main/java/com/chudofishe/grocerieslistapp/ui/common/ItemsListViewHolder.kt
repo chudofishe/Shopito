@@ -78,7 +78,7 @@ class HistoryListItemViewHolder(private val binding: ShoppingItemBinding,
                 properties.visibility = View.VISIBLE
                 properties.text = it
             }
-            if (item.originalCategory != Category.UNCATEGORIZED) {
+            if (item.originalCategory != Category.OTHER) {
                 categoryIcon.apply {
                     visibility = View.VISIBLE
                     setImageResource(item.originalCategory.drawable)
@@ -149,7 +149,7 @@ class FavoriteEditableListItemViewHolder(private val binding: ShoppingItemFavori
 
     override fun setLeadingIconImage(category: Category) {
         with(binding) {
-            if (category == Category.UNCATEGORIZED) {
+            if (category == Category.OTHER) {
                 categoryIcon.visibility = View.INVISIBLE
             } else {
                 categoryIcon.visibility = View.VISIBLE
@@ -187,7 +187,7 @@ class FavoriteSelectionListItemViewHolder(private val binding: ShoppingItemFavor
 
     override fun setLeadingIconImage(category: Category) {
         with(binding) {
-            if (category == Category.UNCATEGORIZED) {
+            if (category == Category.OTHER) {
                 categoryIcon.visibility = View.INVISIBLE
             } else {
                 categoryIcon.visibility = View.VISIBLE

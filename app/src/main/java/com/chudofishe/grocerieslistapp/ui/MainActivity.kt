@@ -55,6 +55,14 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    fun clearShoppingListHistory(deleteFavoriteLists: Boolean) {
+        viewModel.clearShoppingListHistory(deleteFavoriteLists)
+    }
+
+    fun clearFavoriteProducts() {
+        viewModel.clearFavoriteProducts()
+    }
+
     override fun onSupportNavigateUp(): Boolean {
         return if (drawerLayout.isOpen) {
             drawerLayout.close()

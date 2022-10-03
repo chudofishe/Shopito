@@ -3,6 +3,7 @@ package com.chudofishe.grocerieslistapp.ui
 import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.chudofishe.grocerieslistapp.data.SharedPrefAppStore
+import com.chudofishe.grocerieslistapp.data.dao.ShoppingItemDao
 import com.chudofishe.grocerieslistapp.data.dao.ShoppingListDao
 import com.chudofishe.grocerieslistapp.ui.common.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -15,7 +16,8 @@ import javax.inject.Inject
 @HiltViewModel
 class MainActivityViewModel @Inject constructor(
     private val sharedPrefAppStore: SharedPrefAppStore,
-    private val shoppingListDao: ShoppingListDao
+    private val shoppingListDao: ShoppingListDao,
+    private val shoppingItemDao: ShoppingItemDao
 ) : BaseViewModel() {
 
     private val _didWatchOnBoarding = MutableSharedFlow<Boolean>()
@@ -32,5 +34,21 @@ class MainActivityViewModel @Inject constructor(
         val value = sharedPrefAppStore.getDeleteListOlderThen()
         Log.d(javaClass.name, "deleteOldLists value: $value")
         shoppingListDao.deleteOldLists(epochDay = LocalDate.now().toEpochDay() - value)
+    }
+
+    fun clearShoppingListHistory(deleteFavoriteLists: Boolean) {
+        viewModelScope.launch {
+            if (deleteFavoriteLists) {
+                shoppingListDao.deleteAll()
+            } else {
+                shoppingListDao.deleteNonFavorites()
+            }
+        }
+    }
+
+    fun clearFavoriteProducts() {
+        viewModelScope.launch {
+            shoppingItemDao.deleteAll()
+        }
     }
 }
