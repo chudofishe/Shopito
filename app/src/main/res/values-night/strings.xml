@@ -1,11 +1,12 @@
 <resources>
-    <string name="app_name">GroceriesListApp</string>
-    <string name="n_more_items">%1d more</string>
+    <string name="app_name">Shopito</string>
+    <string name="n_more_items">%1d more items</string>
     <string name="add_item">Add item</string>
     <string name="active_list_title">Active list</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
     <string name="cancel">Cancel</string>
+    <string name="add_from_favorites_button">Add from favorites</string>
 
     <!-- Category names -->
     <string name="category_children">Kids</string>
@@ -32,10 +33,7 @@
     <string name="menu_edit">Edit</string>
 
     <!-- Tooltip text -->
-    <string name="tooltip_active_list_empty">
-        • Add an item below to start your list\n\n<br/>
-        • Tap list item to mark it as done\n\n<br/>
-        • Tap and hold to add item to favorites
+    <string name="tooltip_active_list_empty">• Add an item below to start your list\n\n<br/>• Tap list item to mark it as done\n\n<br/>• Tap and hold to add item to favorites
     </string>
     <string name="tooltip_active_list_done">Good Job! List was added to history</string>
     <string name="title_tooltip">Title</string>
@@ -65,8 +63,8 @@
     <string name="n_days_ago">%1d days ago</string>
 
     <!-- Acessibility -->
-    <string name="drawer_open_desc">Navigation Drawer opened</string>
-    <string name="drawer_closed_desc">Navigation Drawer closed</string>
+    <string name="drawer_open_desc" translatable="false">Navigation Drawer opened</string>
+    <string name="drawer_closed_desc" translatable="false">Navigation Drawer closed</string>
     <string name="hide">Hide</string>
     <string name="item_description">Description</string>
 
@@ -113,6 +111,6 @@
         <item>30</item>
         <item>1000</item>
     </string-array>
-    <string name="settings_storage_values_default">14</string>
+    <string name="settings_storage_values_default" translatable="false">14</string>
     <string name="settings_complete_lists">Complete lists automatically</string>
 </resources>

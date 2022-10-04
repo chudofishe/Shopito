@@ -89,4 +89,12 @@
         <item name="boxStrokeColor">@color/text_input_stroke_color</item>
     </style>
 
+    <style name="ShortStackHeadline4" parent="TextAppearance.MaterialComponents.Headline4">
+        <item name="fontFamily">@font/short_stack</item>
+        <item name="android:fontFamily">@font/short_stack</item>
+        <item name="android:textColorHighlight">@color/primaryColor</item>
+        <item name="android:textColorHint">@color/primaryColor</item>
+        <item name="android:textColorLink">@color/primaryColor</item>
+    </style>
+
 </resources>

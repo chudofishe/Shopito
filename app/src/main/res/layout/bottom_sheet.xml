@@ -70,7 +70,7 @@
         android:textColor="@color/secondaryColor"
         app:iconTint="@color/secondaryColor"
         style="@style/Widget.MaterialComponents.Button.TextButton.Icon"
-        android:text="Add from favorites"
+        android:text="@string/add_from_favorites_button"
         app:icon="@drawable/ic_baseline_favorite_border_24" />
 
 </LinearLayout>

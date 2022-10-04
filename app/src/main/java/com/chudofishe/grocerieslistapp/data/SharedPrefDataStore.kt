@@ -35,11 +35,4 @@ class SharedPrefDataStore(private val appContext: Context) {
         }
         return null
     }
-
-    fun clearTempState() {
-        val sharedPreferences =
-            appContext.getSharedPreferences(SHARED_PREF_FILE_KEY, Context.MODE_PRIVATE).edit()
-        sharedPreferences.remove(SHARED_PREF_ACTIVE_STATE_KEY)
-        sharedPreferences.apply()
-    }
 }

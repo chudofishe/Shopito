@@ -43,7 +43,6 @@ class ActiveListViewModel @Inject constructor(
     }
 
     companion object {
-        private const val CURRENT_LIST = "currentList"
         private const val SELECTED_ITEMS = "selectedFavItems"
         private const val HISTORY_LIST = "historyList"
     }
