@@ -2,7 +2,6 @@ package com.chudofishe.grocerieslistapp.di
 
 import android.content.Context
 import com.chudofishe.grocerieslistapp.data.SharedPrefAppStore
-import com.chudofishe.grocerieslistapp.data.SharedPrefDataStore
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

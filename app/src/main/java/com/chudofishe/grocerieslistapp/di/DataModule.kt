@@ -3,7 +3,7 @@ package com.chudofishe.grocerieslistapp.di
 import android.content.Context
 import androidx.room.Room
 import com.chudofishe.grocerieslistapp.data.AppDatabase
-import com.chudofishe.grocerieslistapp.data.SharedPrefDataStore
+import com.chudofishe.grocerieslistapp.data.repository.ActiveListRepository
 import com.chudofishe.grocerieslistapp.data.dao.ShoppingItemDao
 import com.chudofishe.grocerieslistapp.data.dao.ShoppingListDao
 import dagger.Module
@@ -40,7 +40,7 @@ object DataModule {
 
     @Provides
     @Singleton
-    fun provideSharedPrefDataStore(@ApplicationContext applicationContext: Context): SharedPrefDataStore {
-        return SharedPrefDataStore(applicationContext)
+    fun provideActiveListRepository(@ApplicationContext applicationContext: Context): ActiveListRepository {
+        return ActiveListRepository(applicationContext)
     }
 }

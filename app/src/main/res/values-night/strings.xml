@@ -19,6 +19,7 @@
     <string name="category_meds">Medication</string>
     <string name="category_fruits_and_vegatables">Fruits &amp; Vegetables</string>
     <string name="category_meat">Meat &amp; Fish</string>
+    <string name="category_hygiene_and_cosmetics">Hygiene &amp; Cosmetics</string>
     <string name="category_snacks">Snacks</string>
     <string name="category_other">Other</string>
     <string name="category_done">Done</string>

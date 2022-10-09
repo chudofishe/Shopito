@@ -47,7 +47,6 @@ class CategoriesListAdapter(private val onEventListener: CategoryAdapterEventLis
     }
 
     fun setList(list: List<ShoppingItem>) {
-
         Category.values().forEach { category ->
             val filteredList = list.filter { x -> x.currentCategory == category }
             if (filteredList.isEmpty()) {
@@ -61,7 +60,6 @@ class CategoriesListAdapter(private val onEventListener: CategoryAdapterEventLis
                 addListToCategory(filteredList, category)
             }
         }
-
     }
 
     private fun addListToCategory(list: List<ShoppingItem>, category: Category) {

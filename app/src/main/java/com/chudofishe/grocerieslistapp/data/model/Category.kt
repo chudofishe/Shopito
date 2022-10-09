@@ -12,6 +12,7 @@ enum class Category(val drawable: Int, val text: Int) {
     DAIRY (R.drawable. icons8_ingredients_for_cooking_100, R.string.category_dairy),
     MEDS (R.drawable.icons8_pills_100, R.string.category_meds),
     FRUITS_AND_VEGETABLES (R.drawable.icons8_salad_100, R.string.category_fruits_and_vegatables),
+    HYGIENE_AND_COSMETICS (R.drawable.icons8_lipstick_96, R.string.category_hygiene_and_cosmetics),
     MEAT (R.drawable.icons8_steak_100, R.string.category_meat),
     SNACKS (R.drawable.icons8_sweets_100, R.string.category_snacks),
     OTHER (R.drawable.icons8_task_96, R.string.category_other),

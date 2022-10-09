@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Shopito</string>
+    <string name="n_more_items">"Ещё %1d "</string>
+    <string name="add_item">Название</string>
+    <string name="active_list_title">Активный список</string>
+    <string name="yes">Да</string>
+    <string name="no">Нет</string>
+    <string name="cancel">Отменить</string>
+
+    <string name="add_from_favorites_button">Добавить из избранного</string>
+    <string name="category_children">Дети</string>
+
+    <string name="category_bakery">Выпечка</string>
+    <string name="category_drinks">Напитки</string>
+    <string name="category_pets">Питомцы</string>
+    <string name="category_home">Для дома</string>
+    <string name="category_hygiene_and_cosmetics">Косметика и гигиена</string>
+    <string name="category_grocery">Бакалея</string>
+
+    <string name="category_dairy">Молочное</string>
+    <string name="category_meds">Аптека</string>
+
+    <string name="category_fruits_and_vegatables">Фрукты и овощи</string>
+    <string name="category_meat">Мясо и рыба</string>
+    <string name="category_snacks">Десерты</string>
+    <string name="category_other">Другое</string>
+    <string name="category_done">Готово</string>
+
+    <string name="delete_all">Удалить всё</string>
+
+    <string name="complete_all">Завершить все</string>
+    <string name="clear_list">Очистить</string>
+
+    <string name="mark_as_done">Завершить список</string>
+
+    <string name="menu_delete">Удалить</string>
+
+    <string name="menu_set_active">Сделать активным</string>
+
+    <string name="uncomplete_all">Вернуть все</string>
+    <string name="menu_edit">Изменить</string>
+    <string name="tooltip_active_list_empty">• Добавьте продукт снизу чтобы начать\n\n<br />• Нажмите на продукт чтобы пометить его как готовый\n\n<br />• Зажмите продукт чтобы добавить его в избранное</string>
+    <string name="tooltip_active_list_done">Отлично, список сохранен в истории</string>
+
+    <string name="title_tooltip">Заголовок</string>
+    <string name="tooltip_favorite_products_screen">Здесь будут избранные продукты</string>
+    <string name="tooltip_favorite_list_screen">Здесь будут избранные списки</string>
+
+    <string name="tooltip_history_list_screen">Здесь будут завершенные списки</string>
+    <string name="n_items">%1d позиций</string>
+    <string name="active">Активный список</string>
+    <string name="history">История</string>
+
+    <string name="favorites">Избранное</string>
+
+    <string name="favorite_products">Избранные продукты</string>
+
+    <string name="settings">Настройки</string>
+    <string name="tab_lists">Списки</string>
+
+    <string name="tab_products">Продукты</string>
+
+    <string name="question_delete_all">Вы уверены что хотите удалить все записи?</string>
+    <string name="question_delete">Вы уверены что хотите удалить этот список?</string>
+    <string name="question_save_to_favorites">Добавить в избранное?</string>
+
+    <string name="today">Сегодня</string>
+    <string name="yesterday">Вчера</string>
+
+    <string name="n_days_ago">%1d дней назад</string>
+    <string name="hide">Спрятать</string>
+    <string name="item_description">Описание</string>
+    <string name="onboarding_title_1">Создавайте</string>
+
+    <string name="onboarding_title_2">Хранит историю покупок</string>
+
+    <string name="onboarding_title_3">Избранное</string>
+    <string name="onboarding_subtitle_1">Создавайте списки покупок и сортируйте позиции по категориям</string>
+
+    <string name="onboarding_subtitle_2">Завершенные листы сохраняются в истории</string>
+    <string name="onboarding_subtitle_3">Добаляйте продукты в избранное для быстрого доступа</string>
+
+    <string name="settings_category_title_appearance">Кастомизация</string>
+    <string name="settings_category_title_active_list">Активный список</string>
+
+    <string name="settings_category_title_storage">Хранилище</string>
+    <string name="settings_collapse_done_category">Сорвачивать категорию готово</string>
+    <string name="settings_language">Язык</string>
+
+    <string name="settings_storage_delete_all_lists_dialog">Так же удалить избранные списки?</string>
+
+    <string name="settings_storage_delete_all_lists">Очистить историю покупок</string>
+    <string name="settings_storage_delete_all_favorite_products_dialog">Вы уверены что хотите удалить все избранные продукты?</string>
+    <string name="settings_storage_delete_all_favorite_products">Очистить избранные продукты</string>
+
+    <string name="settings_storage_auto_delete">Удаление старых списков</string>
+    <string name="settings_storage_auto_delete_dialog">Автоматически удалять записить страше чем</string>
+    <string name="settings_storage_auto_delete_desc">Автоматически удалять записи старше определенной даты (не касается избранных листов)</string>
+    <string name="settings_complete_lists">Автоматически завершать списки</string>
+
+    <string-array name="settings_storage_entries">
+        <item>7 дней</item>
+        <item>14 дней</item>
+        <item>1 месяц</item>
+        <item>Никогда</item>
+    </string-array>
+
+</resources>

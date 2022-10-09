@@ -60,7 +60,7 @@ class ActiveListFragment : BaseFragment<ActiveListViewModel>(), CategoryAdapterE
     ): View {
         _binding = FragmentActiveListBinding.inflate(inflater, container, false)
 
-        binding.apply {
+        with(binding) {
             categoriesGroup = bottomSheet.categoriesChipGroup
             categoriesList = categories
             submitButton = bottomSheet.submit
@@ -176,9 +176,7 @@ class ActiveListFragment : BaseFragment<ActiveListViewModel>(), CategoryAdapterE
 
         addFavoriteButton.setOnClickListener {
             val direction =
-                ActiveListFragmentDirections.actionActiveListDestinationToFavoriteProductsFragment(
-                    true
-                )
+                ActiveListFragmentDirections.actionActiveListDestinationToFavoriteProductsFragment(true)
             viewModel.navigate(direction)
         }
 
@@ -219,7 +217,7 @@ class ActiveListFragment : BaseFragment<ActiveListViewModel>(), CategoryAdapterE
     }
 
     fun saveCurrentState() {
-        viewModel.saveCurrentStateToPrefs()
+        viewModel.saveCurrentState()
     }
 
     private fun setToolTip(status: ActiveListViewModel.ListStatus? = null) {

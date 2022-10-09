@@ -4,7 +4,7 @@ import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.chudofishe.grocerieslistapp.data.SharedPrefAppStore
-import com.chudofishe.grocerieslistapp.data.SharedPrefDataStore
+import com.chudofishe.grocerieslistapp.data.repository.ActiveListRepository
 import com.chudofishe.grocerieslistapp.data.dao.ShoppingItemDao
 import com.chudofishe.grocerieslistapp.data.dao.ShoppingListDao
 import com.chudofishe.grocerieslistapp.data.model.Category
@@ -12,10 +12,7 @@ import com.chudofishe.grocerieslistapp.data.model.ShoppingItem
 import com.chudofishe.grocerieslistapp.data.model.ShoppingList
 import com.chudofishe.grocerieslistapp.ui.common.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.util.*
@@ -24,7 +21,7 @@ import javax.inject.Inject
 @HiltViewModel
 class ActiveListViewModel @Inject constructor(
     private val shoppingListDao: ShoppingListDao,
-    private val sharedPrefDataStore: SharedPrefDataStore,
+    private val activeListRepository: ActiveListRepository,
     shoppingItemDao: ShoppingItemDao,
     savedStateHandle: SavedStateHandle,
     sharedPrefAppStore: SharedPrefAppStore
@@ -64,16 +61,19 @@ class ActiveListViewModel @Inject constructor(
     /* Get data/state from savedStateHandle and serialized state from shared prefs */
     init {
         viewModelScope.launch {
-            if (historizedList != null) {
+            if (historizedList == null) {
+                activeListRepository.getTempState().collect {
+                    it?.let {
+                        _activeListState.value = ActiveStateWrapper(
+                            state = it,
+                            listStatus = if (it.items.isEmpty()) ListStatus.EMPTY else ListStatus.ACTIVE
+                        )
+                    }
+                }
+            } else {
                 _activeListState.value = ActiveStateWrapper(
                     state = historizedList.apply { id = 0; isFavorite = false; resetDoneItems() },
                     listStatus = if (historizedList.items.isEmpty()) ListStatus.EMPTY else ListStatus.ACTIVE
-                )
-            } else {
-                val state = getSavedStateFromPrefs()
-                _activeListState.value = ActiveStateWrapper(
-                    state = state,
-                    listStatus = if (state.items.isEmpty()) ListStatus.EMPTY else ListStatus.ACTIVE
                 )
             }
             selectedItems?.let {
@@ -82,18 +82,14 @@ class ActiveListViewModel @Inject constructor(
         }
     }
 
-    private fun saveStateToDB(list: ShoppingList) {
+    private fun saveList(list: ShoppingList) {
         viewModelScope.launch {
             shoppingListDao.insert(list.apply { date = LocalDate.now() })
         }
     }
 
-    fun saveCurrentStateToPrefs() {
-        sharedPrefDataStore.saveTempState(_activeListState.value.state)
-    }
-
-    private fun getSavedStateFromPrefs(): ShoppingList {
-        return sharedPrefDataStore.getTempState() ?: ShoppingList()
+    fun saveCurrentState() {
+        activeListRepository.saveTempState(_activeListState.value.state)
     }
 
     /* START MODIFY STATE ITEMS LIST */
@@ -171,7 +167,7 @@ class ActiveListViewModel @Inject constructor(
 
     private fun onListCompleted(state: ShoppingList) {
         viewModelScope.launch {
-            saveStateToDB(state)
+            saveList(state)
             _activeListState.value = ActiveStateWrapper(listStatus = ListStatus.EMPTY)
             _showOnCompletedDialog.emit(true)
         }
@@ -193,7 +189,7 @@ class ActiveListViewModel @Inject constructor(
 
     override fun onCleared() {
         super.onCleared()
-        saveCurrentStateToPrefs()
+        saveCurrentState()
         Log.d(javaClass.name, "onCleared")
     }
 }

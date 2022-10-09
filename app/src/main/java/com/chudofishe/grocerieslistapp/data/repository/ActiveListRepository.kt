@@ -1,18 +1,14 @@
-package com.chudofishe.grocerieslistapp.data
+package com.chudofishe.grocerieslistapp.data.repository
 
 import android.content.Context
-import com.chudofishe.grocerieslistapp.data.model.ShoppingItem
 import com.chudofishe.grocerieslistapp.data.model.ShoppingList
-import com.chudofishe.grocerieslistapp.util.Constants
-import dagger.hilt.EntryPoint
-import dagger.hilt.InstallIn
-import dagger.hilt.components.SingletonComponent
+import kotlinx.coroutines.flow.flow
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
 
-class SharedPrefDataStore(private val appContext: Context) {
+class ActiveListRepository(private val appContext: Context) {
 
     companion object {
         private const val SHARED_PREF_FILE_KEY = "com.chudofishe.grocerieslistapp.SHARED_PREF_KEY"
@@ -26,13 +22,14 @@ class SharedPrefDataStore(private val appContext: Context) {
         sharedPreferences.apply()
     }
 
-    fun getTempState(): ShoppingList? {
+    suspend fun getTempState() = flow {
         val sharedPreferences =
             appContext.getSharedPreferences(SHARED_PREF_FILE_KEY, Context.MODE_PRIVATE)
         val state = sharedPreferences.getString(SHARED_PREF_ACTIVE_STATE_KEY, null)
-        state?.let {
-            return Json.decodeFromString<ShoppingList>(state)
+        if (state != null) {
+            emit(Json.decodeFromString<ShoppingList>(state))
+        } else {
+            emit(null)
         }
-        return null
     }
 }
