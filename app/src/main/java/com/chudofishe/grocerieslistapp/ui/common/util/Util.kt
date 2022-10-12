@@ -6,11 +6,13 @@ import android.content.Context
 import android.text.Editable
 import android.util.TypedValue
 import android.view.View
+import android.view.inputmethod.InputMethodManager
 import androidx.core.content.ContextCompat
 import com.chudofishe.grocerieslistapp.R
 import com.chudofishe.grocerieslistapp.data.model.Category
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
+import com.google.android.material.textfield.TextInputEditText
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
@@ -59,6 +61,12 @@ fun ChipGroup.init() {
             }
             this.addView(chip)
         }
+}
+
+fun TextInputEditText.focus() {
+    this.requestFocus()
+    val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+    imm.showSoftInput(this, InputMethodManager.SHOW_FORCED)
 }
 
 fun View.fadeIn(animDuration: Int) {

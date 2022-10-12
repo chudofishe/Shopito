@@ -28,6 +28,7 @@ import com.chudofishe.grocerieslistapp.databinding.FragmentActiveListBinding
 import com.chudofishe.grocerieslistapp.ui.common.BaseFragment
 import com.chudofishe.grocerieslistapp.ui.common.util.*
 import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.bottomsheet.BottomSheetBehavior.BottomSheetCallback
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.chip.ChipGroup
 import com.google.android.material.textfield.TextInputEditText
@@ -87,10 +88,8 @@ class ActiveListFragment : BaseFragment<ActiveListViewModel>(), CategoryAdapterE
         lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.CREATED) {
                 viewModel.activeListState.collect { wrapper ->
-                    wrapper.state.title?.let {
-                        if (titleInput.editText?.text.toString() != it) {
-                            titleInput.editText?.setText(it)
-                        }
+                   wrapper.state.title?.let {
+                        titleInput.editText?.setText(it)
                     }
                     categoriesAdapter.setList(wrapper.state.items)
                     setToolTip(wrapper.listStatus)
@@ -157,21 +156,11 @@ class ActiveListFragment : BaseFragment<ActiveListViewModel>(), CategoryAdapterE
         }
 
         titleInput.editText?.addTextChangedListener(object : TextWatcher {
-            private val handler = Handler(Looper.getMainLooper())
-            private val runnable = Runnable {
-                viewModel.updateTitle(titleInput.editText?.text.toStringOrNull())
-            }
-
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                handler.removeCallbacks(runnable)
+                viewModel.listTitle = titleInput.editText?.text.toStringOrNull()
             }
-
-            override fun afterTextChanged(s: Editable?) {
-                if (!s.isNullOrEmpty()) {
-                    handler.postDelayed(runnable, 1000)
-                }
-            }
+            override fun afterTextChanged(s: Editable?) {}
         })
 
         addFavoriteButton.setOnClickListener {
@@ -214,6 +203,22 @@ class ActiveListFragment : BaseFragment<ActiveListViewModel>(), CategoryAdapterE
 
     override fun onCategoryCompleted(list: List<ShoppingItem>) {
         viewModel.updateItemsList(list)
+    }
+
+    override fun onAddButtonClicked(category: Category) {
+        categoriesGroup.check(category.ordinal)
+        bottomSheetBehavior.addBottomSheetCallback(object : BottomSheetCallback() {
+            override fun onStateChanged(bottomSheet: View, newState: Int) {
+                if (newState == BottomSheetBehavior.STATE_EXPANDED) {
+                    itemName.text?.clear()
+                    itemDescription.text?.clear()
+                    itemName.focus()
+                    bottomSheetBehavior.removeBottomSheetCallback(this)
+                }
+            }
+            override fun onSlide(bottomSheet: View, slideOffset: Float) {}
+        })
+        bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
     }
 
     fun saveCurrentState() {
@@ -264,12 +269,6 @@ class ActiveListFragment : BaseFragment<ActiveListViewModel>(), CategoryAdapterE
                 titleInput.editText?.text?.clear()
             }
         }
-    }
-
-    private fun hideKeyboard(view: View) {
-        view.clearFocus()
-        val imm = view.context?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-        imm.hideSoftInputFromWindow(view.windowToken, 0)
     }
 
     override fun onDestroyView() {

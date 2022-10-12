@@ -134,24 +134,22 @@ class CategoriesListAdapter(private val onEventListener: CategoryAdapterEventLis
                     { itemCount -> updateItemCount(binding.numItems, itemCount) }
             }
             this.category = category
-            binding.categoryImage.setImageResource(category.drawable)
-            binding.title.text = itemView.context.resources.getString(category.text)
-            binding.itemsList.adapter = this.adapter
 
+            with(binding) {
+                categoryImage.setImageResource(category.drawable)
+                title.text = itemView.context.resources.getString(category.text)
+                itemsList.adapter = this@ViewHolder.adapter
+                options.setOnClickListener(showPopUpMenu)
+                buttonAdd.setOnClickListener { onEventListener.onAddButtonClicked(category) }
+                categoryHeader.setOnClickListener(toggleCollapse)
+            }
             if (category == Category.DONE && collapseDone) toggleCollapse()
-
-            binding.options.setOnClickListener(showPopUpMenu)
-
-            binding.collapse.setOnClickListener(toggleCollapse)
 
             updateItemCount(binding.numItems, adapter.itemCount)
         }
 
         private fun toggleCollapse() {
-            binding.collapse.animate().apply {
-                rotationXBy(180f)
-            }.start()
-            binding.apply {
+            with(binding) {
                 if (itemsList.isVisible) {
                     itemsList.visibility = View.GONE
                     divider.visibility = View.GONE

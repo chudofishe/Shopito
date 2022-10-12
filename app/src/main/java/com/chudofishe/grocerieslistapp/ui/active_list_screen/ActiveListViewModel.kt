@@ -44,6 +44,9 @@ class ActiveListViewModel @Inject constructor(
         private const val HISTORY_LIST = "historyList"
     }
 
+    var listTitle: String? = null
+        get() = if (field.isNullOrEmpty()) null else field
+
     /* Nav arg */
     private val historizedList: ShoppingList? = savedStateHandle[HISTORY_LIST]
     /* Nav arg */
@@ -84,12 +87,12 @@ class ActiveListViewModel @Inject constructor(
 
     private fun saveList(list: ShoppingList) {
         viewModelScope.launch {
-            shoppingListDao.insert(list.apply { date = LocalDate.now() })
+            shoppingListDao.insert(list.apply { date = LocalDate.now(); title = listTitle })
         }
     }
 
     fun saveCurrentState() {
-        activeListRepository.saveTempState(_activeListState.value.state)
+        activeListRepository.saveTempState(_activeListState.value.state.apply { title = listTitle })
     }
 
     /* START MODIFY STATE ITEMS LIST */
@@ -151,10 +154,6 @@ class ActiveListViewModel @Inject constructor(
 
     private fun updateItemsState(items: List<ShoppingItem>) {
         updateState(_activeListState.value.state.also { it.items = items })
-    }
-
-    fun updateTitle(title: String?) {
-        updateState(_activeListState.value.state.also { it.title = title }, false)
     }
 
     /* END MODIFY STATE ITEMS LIST */
