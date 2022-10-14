@@ -5,7 +5,7 @@ Shopito is a simple app that helps you to create and arrange shopping lists. Cre
 
 ## Tech Stack
 
-Kotlin, Dagger Hilt, Glide, Room, Navigation Component, MVVM, Material Design
+Kotlin, Coroutines + Flow, Dagger Hilt, Glide, Room, Navigation Component, MVVM, Material Design
 
 
 ## Screenshots
