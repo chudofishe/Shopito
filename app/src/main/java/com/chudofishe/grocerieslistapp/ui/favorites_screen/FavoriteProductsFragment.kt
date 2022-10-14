@@ -181,12 +181,14 @@ class FavoriteProductsFragment : BaseFragment<FavoriteProductsViewModel>(), Item
 
     override fun onStart() {
         super.onStart()
-        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
-            if (bottomSheetBehavior.state == BottomSheetBehavior.STATE_EXPANDED) {
-                bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
-            } else {
-                this.remove()
-                requireActivity().onBackPressed()
+        if (!viewModel.isSelectionMode) {
+            requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
+                if (bottomSheetBehavior.state == BottomSheetBehavior.STATE_EXPANDED) {
+                    bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
+                } else {
+                    this.remove()
+                    requireActivity().onBackPressed()
+                }
             }
         }
     }
