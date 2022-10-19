@@ -71,15 +71,17 @@
     <string name="n_days_ago">%1d дней назад</string>
     <string name="hide">Спрятать</string>
     <string name="item_description">Описание</string>
-    <string name="onboarding_title_1">Создавайте</string>
+    <string name="onboarding_title_1">Категории</string>
 
-    <string name="onboarding_title_2">Хранит историю покупок</string>
+    <string name="onboarding_title_2">История</string>
 
     <string name="onboarding_title_3">Избранное</string>
     <string name="onboarding_subtitle_1">Создавайте списки покупок и сортируйте позиции по категориям</string>
 
-    <string name="onboarding_subtitle_2">Завершенные листы сохраняются в истории</string>
+    <string name="onboarding_subtitle_2">Завершенные списки сохраняются в истории</string>
     <string name="onboarding_subtitle_3">Добаляйте продукты в избранное для быстрого доступа</string>
+
+    <string name="onboarding_finish_button">Погнали!</string>
 
     <string name="settings_category_title_appearance">Кастомизация</string>
     <string name="settings_category_title_active_list">Активный список</string>

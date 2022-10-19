@@ -76,6 +76,7 @@
     <string name="onboarding_subtitle_1">Create groceries lists and sort its items by categories</string>
     <string name="onboarding_subtitle_2">Finished lists are stored in history tab for future use</string>
     <string name="onboarding_subtitle_3">Add products to favorites for easier access</string>
+    <string name="onboarding_finish_button">Let\'s go</string>
 
     <!-- Shred preferences settings entries -->
     <string name="settings_category_title_appearance">Appearance</string>

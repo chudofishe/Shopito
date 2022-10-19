@@ -114,4 +114,5 @@
     </string-array>
     <string name="settings_storage_values_default" translatable="false">14</string>
     <string name="settings_complete_lists">Complete lists automatically</string>
+    <string name="onboarding_finish_button">Let\'s go</string>
 </resources>
