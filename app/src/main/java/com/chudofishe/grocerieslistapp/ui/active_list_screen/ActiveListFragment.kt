@@ -2,14 +2,11 @@ package com.chudofishe.grocerieslistapp.ui.active_list_screen
 
 import android.animation.Animator
 import android.animation.ValueAnimator
-import android.content.Context
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.*
-import android.view.inputmethod.InputMethodManager
 import android.widget.ImageButton
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -273,6 +270,8 @@ class ActiveListFragment : BaseFragment<ActiveListViewModel>(), CategoryAdapterE
 
     override fun onDestroyView() {
         super.onDestroyView()
+        Log.d(javaClass.name, "onDestroyView")
+        toolTipAnim.removeAllAnimatorListeners()
         _binding = null
     }
 }
